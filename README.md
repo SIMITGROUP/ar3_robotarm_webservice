@@ -45,13 +45,11 @@ Command | Description
 /move_l/r?value=__n__ | linear move gripper into axis R in value __n__ mm
 /movetrack | provide guidance move travel track into spefic mm
 /movetrack/t1?value=__n__ | move T1 __n__ mm
-
-
-/write |
-/write/arduino |
-/write/arduino/<pin no> |
-/write/raspberrypi |
-/write/raspberrypi/<pin no> |
+/write | provide facilities to write io value into  arduino and raspberry pi
+/write/arduino | provide guidance
+/write/arduino/__pin_no/label__?value=__n__ |  write __n__ into  specifc pin no or pin label (refer setting section) for arduino
+/write/raspberrypi |  provide guidance
+/write/raspberrypi/__pin_no/label__?value=__n__ |  write __n__ into  specifc pin no or pin label (refer setting section) for raspberry pi
 
 # Setting	
 Here allow us store some setting so our program more user friendly. At the moment we don't provide setting in Teensy. We only allow access io pin at Arduino or Raspberry PI (If you use Pi instead of computer)
