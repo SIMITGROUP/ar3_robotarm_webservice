@@ -1,62 +1,50 @@
 all http traffic use get at the moment
 ## get
-
-/help        # provide some help in string
-~/info~			# get max/min value, limit, encoder status, some description and etc
-/info/all		# loop for all motor, digital io and return data
-/info/j1
-/info/j2
-/info/j3
-/info/j4
-/info/j5
-/info/j6
-/info/t1
-
-/calibrate		# help/guide
-/calibrate/all  # calibrate all join and track
-/calibrate/j1
-/calibrate/j2
-/calibrate/j3
-/calibrate/j4
-/calibrate/j5
-/calibrate/j6	
-/calibrate/t1	# calibrate travel trail, however now ar3 no limit switch yet...
-/calibrate/...
-
-
-/move_j			# rotate stepper motor to n degrees
-/move_j/j1
-/move_j/j2
-/move_j/j3
-/move_j/j4
-/move_j/j5
-/move_j/j6
-/move_j/t1		# move travel trail, maybe use maybe not
-
-/move_l			# linear move motor gripper into specific axis, it will send signal to few motor after ward
-/move_l/x
-/move_l/y
-/move_l/z
-/move_l/w
-/move_l/p
-/move_l/r
-
-/movetrack		# move travel track into spefic mm
-/movetrack/t1	# at the moment, only t1 available
-
-
-
-
-/read			# read all electronic component data
-/read/encoder	# read all stepper motor encoder value
-/read/encoder/j1
-/read/encoder/j1,j3
-
-/read/arduino
-/read/arduino/<n>		# get arduino pin n value, some pin is true/false, some pin is number
-
-/read/raspberrypi/<n>		# if use raspberry pi, can get pi pin n value, some pin is true/false, some pin is number
-
+---
+Command | Description 
+--- | ---
+/help | provide some help in string 
+/info	| get max/min value, limit, encoder status, some description and etc 
+/info/all | loop for all motor, digital io and return data
+/info/j1 | 
+/info/j2 | 
+/info/j3 | 
+/info/j4 | 
+/info/j5 | 
+/info/j6 | 
+/info/t1 | if use travel trail
+/calibrate | help/guide
+/calibrate/all | calibrate all join and track
+/calibrate/j1 | 
+/calibrate/j2 | 
+/calibrate/j3 | 
+/calibrate/j4 | 
+/calibrate/j5 | 
+/calibrate/j6 | 
+/calibrate/t1 | calibrate travel trail, however now ar3 no limit switch yet...
+/move_j | rotate stepper motor to n degrees
+/move_j/j1 |
+/move_j/j2 |
+/move_j/j3 |
+/move_j/j4 |
+/move_j/j5 |
+/move_j/j6 |
+/move_j/t1 | move travel trail, maybe use maybe not
+/move_l | linear move motor gripper into specific axis, it will send signal to few motor after ward
+/move_l/x |
+/move_l/y |
+/move_l/z |
+/move_l/w |
+/move_l/p |
+/move_l/r |
+/movetrack | move travel track into spefic mm
+/movetrack/t1 | at the moment, only t1 available
+/read | read all electronic component data
+/read/encoder | read all stepper motor encoder value
+/read/encoder/j1 | can supply more joint like j1,j2,j3  to read more encoder in 1 time
+/read/arduino |
+/read/arduino/<n> | get arduino pin n value, some pin is true/false, some pin is number
+/read/raspberrypi/<n> | if use raspberry pi, can get pi pin n value, some pin is true/false, some pin is number
 
 /write
 /write/arduino
