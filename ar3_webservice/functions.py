@@ -39,11 +39,11 @@ def changeServoValue(servoname,angle):
     global hardware
     connectHardwares()
     previousvalue = -1
-    if v.servovalue[servoname].get(servoname) is not None:
+    if v.servovalue.get(servoname) is not None:
         previousvalue = v.servovalue[servoname]
     hardware.setServo(servoname,angle)
     v.servovalue[servoname] = angle
-    return '{"status":"OK","msg":' + servoname + ' change from '+previousvalue+' to '+angle +' "}'
+    return '{"status":"OK","msg":' + servoname + ' change from '+str(previousvalue)+' to '+str(angle) +' "}'
 
 
 
