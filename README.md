@@ -1,4 +1,9 @@
-all http traffic use http GET at the moment
+AR3 is cool robot arm project, however it is written as python desktop application, to make it more mobility and support different kind of front end (mobile app, web ui, cloud integration or etc). I decided to make a web service in python to allow developer talk with AR3 using their own prefered languages. I'm still in designing stage and whoever feel interested to participate (either commend or coding) is welcome.
+
+
+all http traffic use http GET at the moment, for testing and design simplicity. 
+
+** NO authentication function in this stage yet. We have to build authentication backend before launch it.
 
 # General Testing
 ---
