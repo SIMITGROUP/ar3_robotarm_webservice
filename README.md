@@ -1,4 +1,4 @@
-AR3 is cool robot arm project, however it is written as python desktop application, to make it more mobility and support different kind of front end (mobile app, web ui, cloud integration or etc). 
+AR3 is cool robot arm project, however it is written as python desktop application, to make it more mobility and support different kind of front end (mobile app, web ui, cloud integration or etc). Beside, it is possible to allow front end application parallel control multiple AR3 from multiple web services.
 
 I decided to rewrite it as web service in python using FLASK to allow developer talk with AR3 using their own prefered languages, the code is 100% independ with existing AR3 desktop app. The desktop app in the respository purely for reference and no related with web services.
 
@@ -35,6 +35,8 @@ Command | Description
 /calibrate/j5 | same as above with J5
 /calibrate/j6 | same as above with J6
 /calibrate/t1 | calibrate travel trail, however now ar3 no limit switch yet...
+/servo | provide list of available servo in system
+/servo/__servo__?angle=__angle__ | __servo__  is servo label defined in setting. if no degree provide will TRY return servo position, else will set servo position (within 0-180 degree). Servo position won't accurate cause we assume our servo motor no feedback pin
 /move_j | provide guide how to use this api
 /move_j/j1?value=__n__ | rotate J1 into __n__ degree
 /move_j/j2?value=__n__ | same as above with J2
@@ -66,6 +68,8 @@ Command | Description
 /setting/changepinlabel | show available type of board and pin to change
 /setting/changepinlabel?device=arduino&pin=__pin__&label=__str__ | label arduino pin __n__ as label __str__. So that afterward we can give more user friendly name to assign value
 /setting/changepinlabel?device=raspberrypi&pin=__pin__&label=__str__ | same as above, for raspberry pi GPIO pin
+/setting/changeservonol?device=arduino&pin=__pin__&servolabel=__servolabel__ | label arduino pin __n__ as servo no  __servolabel__. So that afterward we can give more user friendly name to assign value
+/setting/changeservono?device=raspberrypi&pin=__pin__&servolabel=__servolabel__ | same as above, for raspberry pi GPIO pin.
 
 # training section
 Command | Description
