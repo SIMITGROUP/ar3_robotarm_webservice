@@ -55,8 +55,10 @@ Command | Description
 Here allow us store some setting so our program more user friendly. At the moment we don't provide setting in Teensy. We only allow access io pin at Arduino or Raspberry PI (If you use Pi instead of computer)
 Command | Description
 | --- | --- |
-/setting/arduino/__pin__?label=__str__ | label arduino pin __n__ as label __str__. So that afterward we can give more user friendly name to assign value
-/setting/raspberrypi/__pin__?label=__str__ | same as above, for raspberry pi GPIO pin
+/setting | List available setting type
+/setting/changepinlabel | show available type of board and pin to change
+/setting/changepinlabel?device=arduino&pin=__pin__&label=__str__ | label arduino pin __n__ as label __str__. So that afterward we can give more user friendly name to assign value
+/setting/changepinlabel?device=raspberrypi&pin=__pin__&label=__str__ | same as above, for raspberry pi GPIO pin
 
 # training section
 Command | Description
