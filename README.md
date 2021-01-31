@@ -45,29 +45,22 @@ Command | Description
 /read/arduino |
 /read/arduino/<n> | get arduino pin n value, some pin is true/false, some pin is number
 /read/raspberrypi/<n> | if use raspberry pi, can get pi pin n value, some pin is true/false, some pin is number
-
-/write
-/write/arduino
-/write/arduino/<pin no>
-
-/write/raspberrypi
-/write/raspberrypi/<pin no>
-		
-
-/pinsetting/raspberrypi/<pin>	# use to label pin and read some pin info for pi
-/pinsetting/arduino/<pin>		# use to label pin and read some pin info for pi
-
-/program						# provide list of program name
-/program/<name>					# use program <name>, it list current program steps
-/program/<name>/add				# function to add step into program
-/program/<name>/add/armposition?row=n		# add current arm position into program, insert into row n. 0 =first, empty = last, return latest program list
-/program/<name>/add/wait?value=<int>&row=n		# hold how many second
-/program/<name>/add/positionstring?str=<string>&row=n		# add absolute arm position into program
-
-
-/program/<name>/add/write/raspberrypi?pin=x&value=<int>&row=n		# write signal into io pin
-/program/<name>/add/write/arduino?pin=x&value=<int>&row=n		# write signal into io pin
-
-
-
-/program/<name>/delete?row=n		# remove row n. 0 =first, empty = last, return latest program list
+/write |
+/write/arduino |
+/write/arduino/<pin no> |
+/write/raspberrypi |
+/write/raspberrypi/<pin no> |
+/pinsetting/raspberrypi/<pin> | use to label pin and read some pin info for pi
+/pinsetting/arduino/<pin> |use to label pin and read some pin info for pi
+	
+# programming section
+/program | provide list of program name
+| --- | --- |
+/program/<name> | use program <name>, it list current program steps
+/program/<name>/add  | function to add step into program
+/program/<name>/add/armposition?row=n | add current arm position into program, insert into row n. 0 =first, empty = last, return latest program list
+/program/<name>/add/wait?value=<int>&row=n | hold how many second
+/program/<name>/add/positionstring?str=<string>&row=n | add absolute arm position into program
+/program/<name>/add/write/raspberrypi?pin=x&value=<int>&row=n | write signal into io pin
+/program/<name>/add/write/arduino?pin=x&value=<int>&row=n | write signal into io pin
+/program/<name>/delete?row=n | remove row n. 0 =first, empty = last, return latest program list
