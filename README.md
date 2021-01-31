@@ -35,6 +35,7 @@ Command | Description
 /calibrate/j5 | same as above with J5
 /calibrate/j6 | same as above with J6
 /calibrate/t1 | calibrate travel trail, however now ar3 no limit switch yet...
+/servo | provide list of available servo in system
 /servo/__servo__?value=__degree__ | __servo__  is servo label defined in setting. if no degree provide will TRY return servo position, else will set servo position (in degree). Servo position won't accurate cause we assume our servo motor no feedback pin
 /move_j | provide guide how to use this api
 /move_j/j1?value=__n__ | rotate J1 into __n__ degree
