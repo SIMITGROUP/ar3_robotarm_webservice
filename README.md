@@ -5,47 +5,47 @@ all http traffic use http GET at the moment
 Command | Description 
 --- | ---
 /help | provide some help in string 
-/info	| get max/min value, limit, encoder status, some description and etc 
+/info	| get list of available information (not actual value)
 /info/all | loop for all motor, digital io and return data
-/info/j1 | 
-/info/j2 | 
-/info/j3 | 
-/info/j4 | 
-/info/j5 | 
-/info/j6 | 
-/info/t1 | if use travel trail
-/calibrate | help/guide
-/calibrate/all | calibrate all join and track
-/calibrate/j1 | 
-/calibrate/j2 | 
-/calibrate/j3 | 
-/calibrate/j4 | 
-/calibrate/j5 | 
-/calibrate/j6 | 
+/info/j1 | get J1 encoder value, and hardware configuration like motor type, current and etc
+/info/j2 | same as above with J2
+/info/j3 | same as above with J3
+/info/j4 | same as above with J4
+/info/j5 | same as above with J5
+/info/j6 | same as above with J6
+/info/t1 | same as above with with travel rail (if in use)
+/info/arduino | get all pin data type, labels, and value
+/info/arduino/__n__ | get arduino pin __n__ value, some pin is true/false, some pin is number
+/info/raspberrypi | get all pin data type, labels, and value
+/inf/raspberrypi/__n__ | if use raspberry pi, can get pi pin __n__ value, some pin is true/false, some pin is number
+/calibrate | help/guide on how to use this
+/calibrate/all | calibrate all joint and track in 1 go
+/calibrate/j1 | calibrate all J1 only
+/calibrate/j2 | same as above with J2
+/calibrate/j3 | same as above with J3
+/calibrate/j4 | same as above with J4
+/calibrate/j5 | same as above with J5
+/calibrate/j6 | same as above with J6
 /calibrate/t1 | calibrate travel trail, however now ar3 no limit switch yet...
-/move_j | rotate stepper motor to n degrees
-/move_j/j1 |
-/move_j/j2 |
-/move_j/j3 |
-/move_j/j4 |
-/move_j/j5 |
-/move_j/j6 |
-/move_j/t1 | move travel trail, maybe use maybe not
-/move_l | linear move motor gripper into specific axis, it will send signal to few motor after ward
-/move_l/x |
-/move_l/y |
-/move_l/z |
-/move_l/w |
-/move_l/p |
-/move_l/r |
-/movetrack | move travel track into spefic mm
-/movetrack/t1 | at the moment, only t1 available
-/read | read all electronic component data
-/read/encoder | read all stepper motor encoder value
-/read/encoder/j1 | can supply more joint like j1,j2,j3  to read more encoder in 1 time
-/read/arduino |
-/read/arduino/<n> | get arduino pin n value, some pin is true/false, some pin is number
-/read/raspberrypi/<n> | if use raspberry pi, can get pi pin n value, some pin is true/false, some pin is number
+/move_j | provide guide how to use this api
+/move_j/j1?value=__n__ | rotate J1 into __n__ degree
+/move_j/j2?value=__n__ | same as above with J2
+/move_j/j3?value=__n__ | same as above with J3
+/move_j/j4?value=__n__ | same as above with J4
+/move_j/j5?value=__n__ | same as above with J5
+/move_j/j6?value=__n__ | same as above with J6
+/move_j/t1?value=__n__  |  same as above with travel rail (it maybe not make sense and will remove it)
+/move_l | provide guidance on how to use linear movement
+/move_l/x?value=__n__ | linear move gripper into axis X in value __n__ mm
+/move_l/y?value=__n__ | linear move gripper into axis Y in value __n__ mm
+/move_l/z?value=__n__ | linear move gripper into axis Z in value __n__ mm
+/move_l/w?value=__n__ | linear move gripper into axis W in value __n__ mm
+/move_l/p?value=__n__ | linear move gripper into axis P in value __n__ mm
+/move_l/r?value=__n__ | linear move gripper into axis R in value __n__ mm
+/movetrack | provide guidance move travel track into spefic mm
+/movetrack/t1?value=__n__ | move T1 __n__ mm
+
+
 /write |
 /write/arduino |
 /write/arduino/<pin no> |
