@@ -1,9 +1,8 @@
-/help
+all http traffic use get at the moment
+## get
 
-
-** all http traffic use get at the moment
-[get]
-/info			# get max/min value, limit, encoder status, some description and etc
+/help        # provide some help in string
+~/info~			# get max/min value, limit, encoder status, some description and etc
 /info/all		# loop for all motor, digital io and return data
 /info/j1
 /info/j2
