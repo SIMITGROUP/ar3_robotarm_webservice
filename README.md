@@ -1,5 +1,6 @@
-all http traffic use get at the moment
-## get
+all http traffic use http GET at the moment
+
+# General Testing
 ---
 Command | Description 
 --- | ---
@@ -53,10 +54,12 @@ Command | Description
 /pinsetting/raspberrypi/<pin> | use to label pin and read some pin info for pi
 /pinsetting/arduino/<pin> |use to label pin and read some pin info for pi
 	
-# programming section
-/program | provide list of program name
+# training section
+Command | Description
 | --- | --- |
+/program | provide list of program name
 /program/<name> | use program <name>, it list current program steps
+/program/<name>/run?row=<int> | run program name, start from which row, empty will follow default (line 1)
 /program/<name>/add  | function to add step into program
 /program/<name>/add/armposition?row=n | add current arm position into program, insert into row n. 0 =first, empty = last, return latest program list
 /program/<name>/add/wait?value=<int>&row=n | hold how many second
