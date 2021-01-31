@@ -1,4 +1,6 @@
-AR3 is cool robot arm project, however it is written as python desktop application, to make it more mobility and support different kind of front end (mobile app, web ui, cloud integration or etc). I decided to make a web service in python to allow developer talk with AR3 using their own prefered languages. I'm still in designing stage and whoever feel interested to participate (either commend or coding) is welcome.
+AR3 is cool robot arm project, however it is written as python desktop application, to make it more mobility and support different kind of front end (mobile app, web ui, cloud integration or etc). 
+
+I decided to rewrite it as web service in python to allow developer talk with AR3 using their own prefered languages, the code is 100% independ with existing AR3 desktop app. The desktop app in the respository purely for reference and no related with web services
 
 
 all http traffic use http GET at the moment, for testing and design simplicity. 
