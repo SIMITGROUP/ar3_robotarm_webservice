@@ -16,9 +16,9 @@ Command | Description
 /info/j6 | same as above with J6
 /info/t1 | same as above with with travel rail (if in use)
 /info/arduino | get all pin data type, labels, and value
-/info/arduino/__n__ | get arduino pin __n__ value, some pin is true/false, some pin is number
+/info/arduino/__pin__ | get arduino pin __n__ value (pin label or pin no, refer setting section), either true/false, or number
 /info/raspberrypi | get all pin data type, labels, and value
-/inf/raspberrypi/__n__ | if use raspberry pi, can get pi pin __n__ value, some pin is true/false, some pin is number
+/inf/raspberrypi/__pin__ | if use raspberry pi, get pi pin __n__ value (pin label or pin no, refer setting section), some pin is true/false, some pin is number
 /calibrate | help/guide on how to use this
 /calibrate/all | calibrate all joint and track in 1 go
 /calibrate/j1 | calibrate all J1 only
