@@ -58,12 +58,12 @@ Command | Description
 Command | Description
 | --- | --- |
 /program | provide list of program name
-/program/<name> | use program <name>, it list current program steps
-/program/<name>/run?row=<int> | run program name, start from which row, empty will follow default (line 1)
-/program/<name>/add  | function to add step into program
-/program/<name>/add/armposition?row=n | add current arm position into program, insert into row n. 0 =first, empty = last, return latest program list
-/program/<name>/add/wait?value=<int>&row=n | hold how many second
-/program/<name>/add/positionstring?str=<string>&row=n | add absolute arm position into program
-/program/<name>/add/write/raspberrypi?pin=x&value=<int>&row=n | write signal into io pin
-/program/<name>/add/write/arduino?pin=x&value=<int>&row=n | write signal into io pin
-/program/<name>/delete?row=n | remove row n. 0 =first, empty = last, return latest program list
+/program/__name__ | use program __name__, it list current program steps
+/program/__name__/run?row=<int> | run program name, start from which row, empty will follow default (line 1)
+/program/__name__/add  | function to add step into program
+/program/__name__/add/armposition?row=n | add current arm position into program, insert into row n. 0 =first, empty = last, return latest program list
+/program/__name__/add/wait?value=<int>&row=n | hold how many second
+/program/__name__/add/positionstring?str=<string>&row=n | add absolute arm position into program
+/program/__name__/add/write/raspberrypi?pin=x&value=<int>&row=n | write signal into io pin
+/program/__name__/add/write/arduino?pin=x&value=<int>&row=n | write signal into io pin
+/program/__name__/delete?row=n | remove row n. 0 =first, empty = last, return latest program list
