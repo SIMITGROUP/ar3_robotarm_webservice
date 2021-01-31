@@ -1,9 +1,9 @@
 AR3 is cool robot arm project, however it is written as python desktop application, to make it more mobility and support different kind of front end (mobile app, web ui, cloud integration or etc). 
 
-I decided to rewrite it as web service in python to allow developer talk with AR3 using their own prefered languages, the code is 100% independ with existing AR3 desktop app. The desktop app in the respository purely for reference and no related with web services
+I decided to rewrite it as web service in python using FLASK to allow developer talk with AR3 using their own prefered languages, the code is 100% independ with existing AR3 desktop app. The desktop app in the respository purely for reference and no related with web services.
 
 
-all http traffic use http GET at the moment, for testing and design simplicity. 
+All http traffic use http GET at the moment, for testing and design simplicity, and return will be in json format.
 
 ** NO authentication function in this stage yet. We have to build authentication backend before launch it.
 
