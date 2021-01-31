@@ -35,6 +35,7 @@ Command | Description
 /calibrate/j5 | same as above with J5
 /calibrate/j6 | same as above with J6
 /calibrate/t1 | calibrate travel trail, however now ar3 no limit switch yet...
+/servo/__servono__?value=__degree__ | __servo__ can define in setting, if no degree provide will TRY return servo position, else will set servo position (in degree). Servo position won't accurate cause we assume our servo motor no feedback pin
 /move_j | provide guide how to use this api
 /move_j/j1?value=__n__ | rotate J1 into __n__ degree
 /move_j/j2?value=__n__ | same as above with J2
@@ -66,6 +67,8 @@ Command | Description
 /setting/changepinlabel | show available type of board and pin to change
 /setting/changepinlabel?device=arduino&pin=__pin__&label=__str__ | label arduino pin __n__ as label __str__. So that afterward we can give more user friendly name to assign value
 /setting/changepinlabel?device=raspberrypi&pin=__pin__&label=__str__ | same as above, for raspberry pi GPIO pin
+/setting/changeservonol?device=arduino&pin=__pin__&servono=__servono__ | label arduino pin __n__ as servo no  __servono__. So that afterward we can give more user friendly name to assign value
+/setting/changeservono?device=raspberrypi&pin=__pin__&servono=__servono__ | same as above, for raspberry pi GPIO pin
 
 # training section
 Command | Description
