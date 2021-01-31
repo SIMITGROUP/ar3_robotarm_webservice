@@ -2,3 +2,4 @@
 teensyport="/dev/tty.usbmodem70426001" #"/dev/ttyACM0"
 arduinoport="/dev/tty.usbserial-14410" #"/dev/ttyUSB0"
 servovalue={}
+jointvalue={}

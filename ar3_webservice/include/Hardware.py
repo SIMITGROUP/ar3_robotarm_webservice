@@ -28,6 +28,7 @@ class Hardware:
 
     # write serial command
     def writeIO(self,board,command):
+        command=command+"\n"
         cmdstr = command.encode()
         print(cmdstr)
         board.write(cmdstr)
@@ -35,9 +36,28 @@ class Hardware:
         time.sleep(self.serialwritesleep )
         board.read()
 
+    def rotateJoint(self,jointno,angle):
+        # joint no 1 = A, 2 = B, 3 = C, 4 = D, 5 = E, 6 = F
+        joints = {0:"A",1:"B",2:"C",3:"D",4:"E",5:"F"}
+        jointlabel = joints[jointno]
+
+        # move j1
+        # command  MJA-0-444-S-25-G-15-H-10-I-20-K-5-U-7554-V-2323-W-10-X-7596-Y-2279-Z-3310
+        # command = "MJA" + J1motdir + str( J1jogSteps) + "S" + Speed + "G" + ACCdur + "H" + ACCspd + "I" + DECdur + "K" + DECspd + "U" + str( J1StepCur) + "V" + str(J2StepCur) + "W" + str(J3StepCur) + "X" + str(J4StepCur) + "Y" + str(J5StepCur) + "Z" + str(J6StepCur) + "\n"
+        # J1+MJA 1 444S25G15H10I20K5U 8442 V2878W10X7596Y2279Z3310
+        # J1-MJA 0 444S25G15H10I20K5U 7998 V2878W10X7596Y2279Z3310
+        # move j2 positive
+        # command = "MJB" + J2drivedir + str(J2jogSteps) + "S" + Speed + "G" + ACCdur + "H" + ACCspd + "I" + DECdur + "K" + DECspd + "U" + str(J1StepCur) + "V" + str(J2StepCur) + "W" + str(J3StepCur) + "X" + str(J4StepCur) + "Y" + str(J5StepCur) + "Z" + str(J6StepCur) + "\n"
+        # MJB1555S25G15H10I20K5U7554V2878W10X7596Y2279Z3310
+        #command = "MJ"+jointlabel=
+        command = "MJA1444S25G15H10I20K5U8442V2878W10X7596Y2279Z3310"
+        # command = "MJA0444S25G15H10I20K5U7998V2878W10X7596Y2279Z3310"
+        board = self.ser_teensy  # most of the case, using teensy, this place reserved for future enhancement
+        self.writeIO(board, command)
+
     def setServo(self,servoname, angle):
         print("Change servoname:",servoname)
-        command = "SV0P"+str(angle)+"\n"
+        command = "SV0P"+str(angle)
         board = self.ser_arduino # most of the case, using arduino, this place reserved for future enhancement which add servo into more board
         self.writeIO(board,command)
     #define a class to connect the things
