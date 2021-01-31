@@ -2,6 +2,7 @@ all http traffic use http GET at the moment
 
 # General Testing
 ---
+This section move or read the robot arm in real time
 Command | Description 
 --- | ---
 /help | provide some help in string 
@@ -51,9 +52,14 @@ Command | Description
 /write/arduino/<pin no> |
 /write/raspberrypi |
 /write/raspberrypi/<pin no> |
-/pinsetting/raspberrypi/<pin> | use to label pin and read some pin info for pi
-/pinsetting/arduino/<pin> |use to label pin and read some pin info for pi
-	
+
+# Setting	
+Here allow us store some setting so our program more user friendly. At the moment we don't provide setting in Teensy. We only allow access io pin at Arduino or Raspberry PI (If you use Pi instead of computer)
+Command | Description
+| --- | --- |
+/setting/arduino/__pin__?label=__str__ | label arduino pin __n__ as label __str__. So that afterward we can give more user friendly name to assign value
+/setting/raspberrypi/__pin__?label=__str__ | same as above, for raspberry pi GPIO pin
+
 # training section
 Command | Description
 | --- | --- |
