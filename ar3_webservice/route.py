@@ -1,7 +1,8 @@
 from flask import Flask,request
 import functions as f
-app = Flask(__name__)
+import json
 
+app = Flask(__name__)
 @app.route('/')
 def index():
     return f.index()
@@ -20,8 +21,9 @@ def servolist():
 
 @app.route('/servo/<servo>')
 def servoControl(servo):
+    global f
     angle = request.args.get("angle")
-    return f.controlServo(servo,angle)
+    return f.changeServoValue(servo,angle)
 
 
 ## some override setting at below, just ignore it don't change ##
@@ -30,3 +32,4 @@ def apply_caching(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Content-Type"] = "application/json"
     return response
+

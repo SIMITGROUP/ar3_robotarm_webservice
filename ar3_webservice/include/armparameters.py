@@ -11,3 +11,7 @@ j5maxvalue=104
 j5minvalue=-104
 j6maxvalue=148
 j6minvalue=-148
+
+
+teensybaudrate=115200
+arduinobaudrate=115200
