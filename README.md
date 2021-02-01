@@ -8,10 +8,14 @@ All http traffic use http GET at the moment, for testing and design simplicity, 
 ** NO authentication function in this stage yet. We have to build authentication backend before launch it.
 
 # Setup
-1. Edit `ar3_robotarm_webservice/ar3_webservice/include/values.py`, change the teensy and arduino port to match your computer. Example:
-** windows, Teensy=COM3, Arduino Mega: COM4)
-** linux, Teensy=/dev/ttyACM0, Arduino Mega=/dev/ttyUSB0
-** MAC, Teensy=/dev/tty.usbmodem70426001 (or /dev/cu.usbmodem...), Arduino Mega=/dev/tty.usbserial-14410 (or /dev/cu.usbserial...)
+1. Edit `ar3_robotarm_webservice/ar3_webservice/include/values.py`, change the teensy and arduino port value to match your computer setting. Example:
+```
+windows, Teensy=COM3, Arduino Mega: COM4)
+linux, Teensy=/dev/ttyACM0, Arduino Mega=/dev/ttyUSB0
+MAC, Teensy=/dev/tty.usbmodem70426001 (or /dev/cu.usbmodem...), Arduino Mega=/dev/tty.usbserial-14410 (or /dev/cu.usbserial...)
+```
+You can double check port using Arduino IDE if you not sure. 
+
 2. in terminal, cd into ar3_robotarm_webservice/ar3_webservice, run following command
 ```
 export FLASK_APP=route.py
