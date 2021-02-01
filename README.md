@@ -7,6 +7,28 @@ All http traffic use http GET at the moment, for testing and design simplicity, 
 
 ** NO authentication function in this stage yet. We have to build authentication backend before launch it.
 
+# Setup
+1. Edit `ar3_robotarm_webservice/ar3_webservice/include/values.py`, change the teensy and arduino port to match your computer
+
+2. in terminal, cd into ar3_robotarm_webservice/ar3_webservice, run following command
+```
+export FLASK_APP=route.py
+flask run
+```
+
+You will notice your statement like ARM conneced, and show "Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)"
+
+
+3. use terminal, execute `sh path_to_ar3_webservice/tools/trymotor.sh`
+
+If success, you will notice AR3 gripper and joint move by itself, important content of trymotor.sh as below:
+```
+curl http://127.0.0.1:5000/servo/mygripper?degree=90
+curl http://127.0.0.1:5000//move_j/j1?degree=10
+```
+
+
+
 # General Testing
 ---
 This section move or read the robot arm in real time
