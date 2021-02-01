@@ -36,14 +36,14 @@ Command | Description
 /calibrate/j6 | same as above with J6
 /calibrate/t1 | calibrate travel trail, however now ar3 no limit switch yet...
 /servo | provide list of available servo in system
-/servo/__servo__?angle=__angle__ | __servo__  is servo label defined in setting. if no degree provide will TRY return servo position, else will set servo position (within 0-180 degree). Servo position won't accurate cause we assume our servo motor no feedback pin
+/servo/__servo__?degree=__degree__ | __servo__  is servo label defined in setting. if no degree provide will TRY return servo position, else will set servo position (within 0-180 degree). Servo position won't accurate cause we assume our servo motor no feedback pin
 /move_j | provide guide how to use this api
-/move_j/j1?value=__n__ | rotate J1 into __n__ degree
-/move_j/j2?value=__n__ | same as above with J2
-/move_j/j3?value=__n__ | same as above with J3
-/move_j/j4?value=__n__ | same as above with J4
-/move_j/j5?value=__n__ | same as above with J5
-/move_j/j6?value=__n__ | same as above with J6
+/move_j/j1?degree=__n__ | rotate J1 into __n__ degree
+/move_j/j2?degree=__n__ | same as above with J2
+/move_j/j3?degree=__n__ | same as above with J3
+/move_j/j4?degree=__n__ | same as above with J4
+/move_j/j5?degree=__n__ | same as above with J5
+/move_j/j6?degree=__n__ | same as above with J6
 /move_j/t1?value=__n__  |  same as above with travel rail (it maybe not make sense and will remove it)
 /move_l | provide guidance on how to use linear movement
 /move_l/x?value=__n__ | linear move gripper into axis X in value __n__ mm
