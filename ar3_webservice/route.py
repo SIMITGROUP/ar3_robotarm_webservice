@@ -22,18 +22,18 @@ def servolist():
 @app.route('/servo/<servo>')
 def moveServo(servo):
     global f
-    angle = request.args.get("angle")
-    return f.changeServoValue(servo,angle)
+    degree =int(request.args.get("degree"))
+    return f.changeServoValue(servo,degree)
 
 @app.route('/move_j')
 def joiintlist():
     return '{"status":"OK","msg":"this will return list of stepper motor joint in database"}'
 
-@app.route('/move_j/<jointno>')
-def moveJoint(jointno):
+@app.route('/move_j/<jointname>')
+def moveJoint(jointname):
     global f
-    angle = request.args.get("angle")
-    return f.changeJointValue(jointno,angle)
+    degree =int(request.args.get("degree"))
+    return f.changeJointValue(jointname,degree)
 
 ## some override setting at below, just ignore it don't change ##
 @app.after_request
