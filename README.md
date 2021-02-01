@@ -1,6 +1,6 @@
 This is web services design for open source robot arm (https://www.anninrobotics.com/) project name AR3.
 
-AR3 is cool robot arm project, however it is written as python desktop application, to make it more mobility and support different kind of front end (mobile app, web ui, cloud integration or etc). Beside, it is possible to allow front end application parallel control multiple AR3 from multiple web services.
+AR3 is cool robot arm project, however it is written as python desktop application, to increase mobility and flexibility I build this web service. It allow all developer develop all kind of front end application included web/desktop/mobile app to integrate with this web service. Beside, it also possible to allow single front end application control multiple instance of web services.
 
 I decided to rewrite it as web service in python using FLASK to allow developer talk with AR3 using their own prefered languages, the code is 100% independ with existing AR3 desktop app. The desktop app in the respository purely for reference and no related with web services.
 
