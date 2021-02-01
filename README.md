@@ -33,3 +33,9 @@ curl http://127.0.0.1:5000/servo/mygripper?degree=90
 curl http://127.0.0.1:5000//move_j/j1?degree=10
 ```
 
+# Project Status
+Refer project roadmap
+
+# API
+Refer https://github.com/SIMITGROUP/ar3_robotarm_webservice/wiki to see detail API
+
