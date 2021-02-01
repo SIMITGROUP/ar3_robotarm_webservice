@@ -2,8 +2,7 @@ This is web services design for open source robot arm (https://www.anninrobotics
 
 AR3 is cool robot arm project, however it is written as python desktop application, to increase mobility and flexibility I build this web service. It allow all developer develop all kind of front end application included web/desktop/mobile app to integrate with this web service. Beside, it also possible to allow single front end application control multiple instance of web services.
 
-I decided to rewrite it as web service in python using FLASK to allow developer talk with AR3 using their own prefered languages, the code is 100% independ with existing AR3 desktop app. The desktop app in the respository purely for reference and no related with web services.
-
+I rewrite the source code and reorganize it using FLASK (PYTHON) framework. The code is 100% independ with existing AR3 desktop app, Teensy and Arduino code remain same with the original unchange. The desktop app in the respository purely for reference and no related with web services.
 
 All http traffic use http GET at the moment, for testing and design simplicity, and return will be in json format.
 
