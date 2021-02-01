@@ -13,11 +13,12 @@ def help():
 
 @app.route('/info')
 def info():
-    return '{"status":"OK","msg":"Hello, this is info, you have more then hello world!"}'
+    return f.info()
 
 @app.route('/servo')
 def servolist():
     return '{"status":"OK","msg":"this will return list of servo in database"}'
+
 
 @app.route('/servo/<servo>')
 def moveServo(servo):
@@ -32,8 +33,19 @@ def joiintlist():
 @app.route('/move_j/<jointname>')
 def moveJoint(jointname):
     global f
-    degree =int(request.args.get("degree"))
-    return f.changeJointValue(jointname,degree)
+    degree =request.args.get("degree")
+    return f.rotateJoint(jointname,degree)
+
+
+
+@app.route('/calibrate')
+def calibratelist():
+    return '{"status":"OK","msg":"this will return list of calibration option"}'
+
+@app.route('/calibrate/<jointname>')
+def calibrateAction(jointname):
+    return f.runCalibration(jointname)
+
 
 ## some override setting at below, just ignore it don't change ##
 @app.after_request
