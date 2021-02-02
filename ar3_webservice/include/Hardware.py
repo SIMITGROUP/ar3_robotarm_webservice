@@ -2,8 +2,12 @@
 # here all the processing like joint no and etc start from 0, like 0=Joint 1, 1=joint 2...
 # this class most of the method return string, either status code "OK" or "ERR_SPECIFIC_CODE" only
 import serial
+import serial.tools
+import serial.tools.list_ports
 import time
 import log
+import platform
+import glob # use for search serial port file in mac
 #define a class to connect the things
 class Hardware:
 
@@ -35,13 +39,78 @@ class Hardware:
         self.jointvalue = v.jointvalue
         self.servovalue = v.servovalue
 
+
     def connectAllSerialPort(self):
+        if self.teensyport == "":
+            self.teensyport = self.autoDetectSerialPort('teensy')
+
+        if self.arduinoport == "":
+            self.arduinoport = self.autoDetectSerialPort('arduino')
+
         self.ser_teensy = self.connectSerial(self.teensyport, self.teensybaud)
         self.ser_arduino = self.connectSerial(self.arduinoport, self.arduinobaud)
         return "OK"
 
+
+    def autoDetectSerialPort(self,boardname):
+        print("run autoDetectSerialPort")
+        defteensyboard = ''
+        defarduinoboard = ''
+        osname = platform.system()
+        if osname == "Linux":
+            defteensyboard = "/dev/ttyACM0"
+            defarduinoboard = "/dev/ttyUSB0"
+
+        elif osname == "Darwin":
+
+            teensyboardprefix = "/dev/tty.usbmodem"
+            teensylist = glob.glob(teensyboardprefix + '*')
+            arduinoboardprefix = "/dev/tty.usbserial"
+            arduinolist = glob.glob(arduinoboardprefix + '*')
+
+            if len(teensylist) > 0:
+                defteensyboard = teensylist[0]
+
+            if len(arduinolist) > 0:
+                defarduinoboard = arduinolist[0]
+
+        elif osname == "Windows":
+            defteensyboard = "COM3"
+            defarduinoboard = "COM4"
+
+        if boardname == "teensy":
+            return defteensyboard
+        elif boardname == "arduino":
+            return defarduinoboard
+        else:
+            return ""
+
+
     def connectSerial(self,portname,baud):
         return serial.Serial(portname, baud)
+
+    def checkAllBoard(self):
+
+        if self.checkTeensy() == False:
+            return "ERR_CHECK_TEENSYOFF"
+        elif self.checkArduino() == False:
+            return "ERR_CHECK_ARDUINOOFF"
+        else:
+            return "OK"
+
+    def checkTeensy(self):
+        return self.checkSerial(self.ser_teensy)
+
+    def checkArduino(self):
+        return self.checkSerial(self.ser_arduino)
+
+    def checkSerial(self,ser):
+        try:
+
+            return ser.isOpen()
+        except:
+            return False
+
 
     # write serial command
     def writeIO(self,board,command):
@@ -197,7 +266,7 @@ class Hardware:
 
     # get all stepper motor encoder value
     def refreshStepperMotorEncoderValue(self):
-        log.info("enter checkMachineStatus")
+        log.info("enter refreshStepperMotorEncoderValue")
         # self.rotateJoint( 0,10)
         # self.rotateJoint(0, -10)
         # command = "GPU7996V2322W10X7595Y2278Z3309"
@@ -238,7 +307,7 @@ class Hardware:
             currentdegree = round(currentdegree,2)
             self.jointvalue[i]["degree"] = currentdegree
             log.debug("currentdegree: "+str(currentdegree)+", degreeperstep:"+str(degperstep)+", currentstep: " + str(currentstep) + ", degreefromlimit:"+str(degreefromlimit))
-        log.info("done checkMachineStatus")
+        log.info("done refreshStepperMotorEncoderValue")
 
         # 0: {"maxdeg": 170, "mindeg": -170, "steplimit": 15110, "degperstep": 0, "caldir": 0, "restpos": 0, "reststep": 7555},
         # 1: {"maxdeg": 0, "mindeg": -129.6, "steplimit": 7198, "degperstep": 0, "caldir": 0, "restpos": -90, "reststep": 2199.3888888888887},
@@ -256,9 +325,6 @@ class Hardware:
     def checkMachineStatus(self):
         log.info("enter checkMachineStatus")
         encodervalues = self.refreshStepperMotorEncoderValue() #arrays
-
-
-
         log.info("done checkMachineStatus")
         return encodervalues
 

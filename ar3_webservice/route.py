@@ -53,6 +53,19 @@ def moveJoint(jointname):
     degree =request.args.get("degree")
     return f.rotateJoint(jointname,degree)
 
+@app.route('/movetrack')
+def tracklist():
+    return "a"
+    # return '{"status":"OK","msg":"this will return list of command for movetrack"}'
+
+@app.route('/movetrack/<trackname>')
+def moveTrack(trackname):
+    # global f
+    # value =request.args.get("value")
+    return 'a'
+    # return f.moveTrack(trackname,value)
+
+
 
 
 @app.route('/calibrate')
@@ -69,8 +82,9 @@ def moveToRest():
 
 ## some override setting at below, just ignore it don't change ##
 @app.before_request
-def before_request():
-    f.updateJointValue()
+def before_show():
+    if f.checkARMConnectionReady() == "OK":
+        f.updateJointValue()
 
 
 @app.after_request

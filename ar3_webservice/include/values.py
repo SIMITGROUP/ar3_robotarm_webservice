@@ -1,6 +1,6 @@
 # this file keep all run time value variable name which will change after program running
-teensyport="/dev/tty.usbmodem70426001" #"/dev/ttyACM0"
-arduinoport="/dev/tty.usbserial-14410" #"/dev/ttyUSB0"
+teensyport="" #win:com3, mac:/dev/tty.usbmodem70426001, linux: /dev/ttyACM0
+arduinoport="" #win: com4, mac: /dev/tty.usbserial-14410, linux: /dev/ttyUSB0
 servovalue={}
 jointvalue={
     0:{"degree":0,"step":0},

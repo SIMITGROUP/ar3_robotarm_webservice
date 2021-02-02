@@ -23,7 +23,13 @@ def index():
     return '{"status":"OK","msg":"Welcome index page of AR3 webservice, you can call /help, /info now"}'
 
 def info():
-    result = json.dumps(hardware.checkMachineStatus())
+    result1 = json.dumps(hardware.checkMachineStatus())
+    result2 = hardware.checkAllBoard()
+    return result2
+def checkARMConnectionReady():
+    print("checkARMConnectionReady")
+    result = hardware.checkAllBoard()
+    print("result",result)
     return result
 
 def initSystemVariables():
@@ -114,13 +120,15 @@ def updateJointValue():
     # result: b'00 000000 A7995 B2321 C9 D7594 E2277 F3308\r\n'
     #  01 100000 A7996 B2321 C9 D7594 E2277 F3308
 
+# move travel track "distance " to "distance" mm
+def moveTrack(trackname,distance):
+    a=1
+    # if JogStepsStat.get() == 1:
+    #     TrackSteps = TrackjogEntryField.get()
+    # else:
+    #     TrackSteps = str(int((TrackStepLim / TrackLength) * CT))
+    # command = "MJT1"+TrackSteps+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n"
 
-#  specifically  read joint encoder value, convert become angle
-def readEncoderValue(jointno):
-    hardware.readEncoderValue(jointno)
-
-def readJointValue(jointno):
-    return 0
 
 # convert step no to human readable degree
 def convertStepNoToDegree(stepno):
@@ -135,6 +143,7 @@ def right(s, amount):
 
 def mid(s, offset, amount):
     return s[offset:offset+amount]
+
 
 
 
