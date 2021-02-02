@@ -45,21 +45,25 @@ curl http://127.0.0.1:5000/move_j/J1?degree=90
 echo "done\n"
 
 #J2
-echo "Move J2 90 degree..."
-curl http://127.0.0.1:5000/move_j/J2?degree=90
+echo "Move J2 80 degree..."
+curl http://127.0.0.1:5000/move_j/J2?degree=80
 echo "done\n"
 
 echo "Move J2 another 30 degree wish to break limit ..."
 curl http://127.0.0.1:5000/move_j/J2?degree=30
 echo "done\n"
 
+echo "Move J2 back to 0..."
+curl http://127.0.0.1:5000/move_j/J2?degree=-80
+echo "done\n"
+
 #J3
-echo "13. Move J3 -90 degree..."
-curl http://127.0.0.1:5000/move_j/J3?degree=-90
+echo "13. Move J3 -80 degree..."
+curl http://127.0.0.1:5000/move_j/J3?degree=80
 echo "done\n"
 
 echo "14. Move J3 back to 0..."
-curl http://127.0.0.1:5000/move_j/J3?degree=90
+curl http://127.0.0.1:5000/move_j/J3?degree=-80
 echo "done\n"
 
 #J4
