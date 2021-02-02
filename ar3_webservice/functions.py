@@ -13,6 +13,7 @@ import log
 import armparameters as paras
 import values as v
 import calculation as calc
+import json
 # import webbrowser
 # import pickle
 err_log = {}
@@ -22,8 +23,7 @@ def index():
     return '{"status":"OK","msg":"Welcome index page of AR3 webservice, you can call /help, /info now"}'
 
 def info():
-    result = hardware.checkMachineStatus()
-
+    result = json.dumps(hardware.checkMachineStatus())
     return result
 
 def initSystemVariables():
@@ -37,7 +37,7 @@ def initSystemVariables():
         # J1PosAngLim = float(J1PosAngLimEntryField.get())
         # J1StepLim = int(J1StepLimEntryField.get())
         # J1DegPerStep = float((J1PosAngLim - J1NegAngLim) / float(J1StepLim))
-        paras.jsetting[i]["degperstep"] = float((maxdeg - mindeg)/float(steplimit))
+        paras.jsetting[i]["degperstep"] = round( float((maxdeg - mindeg)/float(steplimit)),8)
         #print(i,".maxdeg",maxdeg,"mindeg",mindeg,"steplimit",steplimit,"degperstep",paras.jsetting[i]["degperstep"])
         #jointvalue[i]=readJointValue(i)
 
@@ -46,67 +46,37 @@ def initSystemVariables():
 def rotateJoint(jname,degree):
     global paras
     if type(degree) is str:
-        degree = int(degree)
-
+        degree = float(degree)
 
     jointname = jname.upper()
 
-    if len(jointname) != 2 and left(jointname,1) != 'J':
-        return '{"status":"Failed","msg": "Joint [' + jointno + '] is invalid value, you shall supply joint with from J1/j1 to J6/j6 only"}'
+    if len(jointname) != 2 and left(jointname,1) != 'J' :
+        return log.getMsg('ERR_JOINT_WRONGNAME','Joint name shall be J1, J2,j1,j2...')
 
     joint_id = int( right(jointname,1) ) - 1
 
     if joint_id < 0 and joint_id > paras.jointqty :
-        return '{"status":"Failed","msg": "Joint [' + jointno + '] is invalid value, you shall supply joint with from J1 to J6 only"}'
+        return log.getMsg('ERR_JOINT_OUT_OF_RANGE','')
+    encoders = hardware.refreshStepperMotorEncoderValue()
+    newdegree = encoders[joint_id]['degree'] + degree
+    newdegreestr = str(newdegree)
+    result = hardware.rotateJoint(joint_id, degree)
 
-    previousvalue = -1
-    hardware.rotateJoint(joint_id, degree)
-    if v.jointvalue.get(joint_id) is not None:
-        previousvalue = v.jointvalue[joint_id]
+    maxdegstr = str(paras.jsetting[joint_id]["maxdeg"])
+    mindegstr = str(paras.jsetting[joint_id]["mindeg"])
+
+    if result != 'OK':
+        jsondata = log.getMsg(result, jname+" shift "+ str(degree) + " become "+ newdegreestr+" which is not within "+mindegstr+"/"+maxdegstr)
     else:
-        previousvalue = readEncoderValue(joint_id)
-
-    newvalue = v.jointvalue[joint_id] + degree
-    v.jointvalue[joint_id] = newvalue
-    return '{"status":"OK","msg":' + jointname + ' change from '+str(previousvalue)+' to '+str(degree) +', become '+ str(newvalue) +'"}'
-
-
-def setJointAbsoluteDegree(jname,degree):
-    if type(degree) is str:
-        degree = int(degree)
-
-
-    jointname = jname.upper()
-
-    if len(jointname) != 2 and left(jointname,1) != 'J':
-        return '{"status":"Failed","msg": "Joint [' + jointno + '] is invalid value, you shall supply joint with from J1/j1 to J6/j6 only"}'
-
-    joint_id = int( right(jointname,1) ) - 1
-
-    if joint_id < 0 and joint_id > 5 :
-        return '{"status":"Failed","msg": "Joint [' + jointno + '] is invalid value, you shall supply joint with from J1 to J6 only"}'
-
-    previousvalue = -1
-    hardware.rotateJoint(joint_id, degree)
-    if v.jointvalue.get(joint_id) is not None:
-        previousvalue = v.jointvalue[joint_id]
-    else:
-        previousvalue = readEncoderValue(joint_id)
-
-    newvalue = v.jointvalue[joint_id] + degree
-    v.jointvalue[joint_id] = newvalue
-    return '{"status":"OK","msg":' + jointname + ' change from '+str(previousvalue)+' to '+str(degree) +', become '+ str(newvalue) +'"}'
+        jsondata = log.getMsg(result,jname+" shift "+ str(degree) + " become "+ newdegreestr+ " which is within "+mindegstr+"/"+maxdegstr)
+    return jsondata
 
 
 # define servoname and how much degree to go
 def changeServoValue(servoname,degree):
     global hardware
-    previousvalue = -1
-    if v.servovalue.get(servoname) is not None:
-        previousvalue = v.servovalue[servoname]
     hardware.setServo(servoname,degree)
-    v.servovalue[servoname] = degree
-    return '{"status":"OK","msg":' + servoname + ' change from '+str(previousvalue)+' to '+str(degree) +' "}'
+    return log.getMsg("OK","")
 
 
 # run calibration task, either calibrate all=all joint, or single joint (J1,J2...)
@@ -115,23 +85,34 @@ def runCalibration(jname):
     jointname = jname.upper()
     result = ""
     if jointname == "SETREST":
-        result = hardware.writeARMPosition('rest')
+        result = hardware.writeARMPosition('rest',[1,1,1,1,1,1])
     elif len(jointname) == 2 and left(jointname,1)=='J':
         jointno = int(right(jname,1)) -1
         result = hardware.calibrateJoint(jointno)
         log.debug(result)
     elif jointname == 'ALL':
         joints = [1, 1, 1, 1, 1, 1]
+        # joints = [1, 0,0,0,0,0]
         result = hardware.goAllJointLimit(joints)
-        hardware.moveFromLimitToRestPosition(joints)
+        # hardware.moveFromLimitToRestPosition(alljoints)
+        result2 = moveRestPosition()
         if result != "OK":
             return log.getMsg(result, "Cannot move all joint into limit switch")
     else:
         return log.getMsg("ERR_CALIBRATE_FAILED01", "Invalid calibration joint name "+jointname)
-
     # all success result return here
     return '{"code":"OK","msg":""}' #log.getMsg("OK", "");
 
+# move arm's joints to rest positions
+def moveRestPosition():
+    alljoints = [1,1,1,1,1,1]
+    # alljoints = [1, 0,0,0,0,0]
+    return hardware.moveFromLimitToRestPosition(alljoints)
+
+def updateJointValue():
+    encodervalue = hardware.refreshStepperMotorEncoderValue()
+    # result: b'00 000000 A7995 B2321 C9 D7594 E2277 F3308\r\n'
+    #  01 100000 A7996 B2321 C9 D7594 E2277 F3308
 
 
 #  specifically  read joint encoder value, convert become angle
