@@ -26,13 +26,15 @@ flask run
 You will notice your statement like ARM conneced, and show "Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)"
 
 
-3. use terminal, execute `sh path_to_ar3_webservice/tools/trymotor.sh`
+3. use terminal, execute `sh path_to_ar3_webservice/tools/01_trymotor.sh`
 
 If success, you will notice AR3 gripper and joint move by itself, important content of trymotor.sh as below:
 ```
 curl http://127.0.0.1:5000/servo/mygripper?degree=90
 curl http://127.0.0.1:5000//move_j/j1?degree=10
 ```
+
+4. You can try another 2 script: 02_calibratealljoint.sh, 03_runmanycommand.sh too.
 
 # Project Status
 Refer project plan
