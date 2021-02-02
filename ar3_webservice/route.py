@@ -1,27 +1,23 @@
 from flask import Flask,request
-from flask_apscheduler import APScheduler
 import functions as f
 import json
 
-
-
-class Config(object):
-    SCHEDULER_API_ENABLED = True
+# from flask_apscheduler import APScheduler
+# class Config(object):
+#     SCHEDULER_API_ENABLED = True
 
 
 
 app = Flask(__name__)
-app.config.from_object(Config())
-scheduler = APScheduler()
-scheduler.init_app(app)
-scheduler.start()
+# app.config.from_object(Config())
+# scheduler = APScheduler()
+# scheduler.init_app(app)
+# scheduler.start()
 
 
-# to avoid something goes wrong, every few second refresh encoder value
-@scheduler.task('interval', id='refresh_position', seconds=3)
-def refresh_position():
-    f.updateJointValue()
-    # a=1
+# # to avoid something goes wrong, every few second refresh encoder value
+# @scheduler.task('interval', id='refresh_position', seconds=3)
+#     a=1
 
 
 @app.route('/')
@@ -72,6 +68,11 @@ def moveToRest():
     return f.moveRestPosition()
 
 ## some override setting at below, just ignore it don't change ##
+@app.before_request
+def before_request():
+    f.updateJointValue()
+
+
 @app.after_request
 def apply_caching(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
