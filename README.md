@@ -9,6 +9,9 @@ All http traffic use http GET at the moment, for testing and design simplicity, 
 ** NO authentication function in this stage yet. We have to build authentication backend before launch it.
 
 # Setup
+Before anything you have to make sure your environment able to run ARCS source code, that require you install python environment in your computer. This webservice developed in Flask, so you may follow flask installation guide https://flask.palletsprojects.com/en/1.1.x/installation/
+
+After the Flask ready, you may follow below step:
 1. Edit configuration files
 `ar3_robotarm_webservice/ar3_webservice/include/values.py` and `ar3_robotarm_webservice/ar3_webservice/include/armparameters.py`
 change the teensy and arduino port value to match your computer setting. Example:
@@ -33,8 +36,9 @@ arduinoport="/dev/tty.usbserial-xxxx"
 ```
 You can double check port using Arduino IDE if you not sure. 
 
-2. in terminal, cd into ar3_robotarm_webservice/ar3_webservice, run following command
+2. in terminal, run following command
 ```
+cd  your_path/ar3_robotarm_webservice/ar3_webservice
 export FLASK_APP=route.py
 flask run
 ```
