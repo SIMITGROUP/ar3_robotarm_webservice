@@ -31,7 +31,7 @@ You will notice your statement like ARM conneced, and show "Running on http://12
 If success, you will notice AR3 gripper and joint move by itself, important content of trymotor.sh as below:
 ```
 curl http://127.0.0.1:5000/servo/mygripper?degree=90
-curl http://127.0.0.1:5000//move_j/j1?degree=10
+curl http://127.0.0.1:5000//move_j/j1?degree=10&movetype=rotate
 ```
 
 4. You can try another 2 script: 02_calibratealljoint.sh, 03_runmanycommand.sh too.
