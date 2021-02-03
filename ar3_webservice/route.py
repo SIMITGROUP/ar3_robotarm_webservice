@@ -79,7 +79,7 @@ def calibrateAction(jointname):
 
 @app.route('/movetorestposition')
 def moveToRest():
-    return f.moveRestPosition()
+    return f.moveRestPosition([1,1,1,1,1,1])
 
 ## some override setting at below, just ignore it don't change ##
 @app.before_request

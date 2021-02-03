@@ -51,7 +51,7 @@ def initSystemVariables():
         #jointvalue[i]=readJointValue(i)
 
 
-# rotate joint "jointno" according movetype, "absolute" = absolute degree, "rotate"= rotate n degree
+# rotate joint "jointno" according movetype, "absolute" = absolute degree, "move"= rotate n degree
 def rotateJoint(jname,degree,movetype):
     global paras
     #validate movetype is received, and with proper value
@@ -59,8 +59,8 @@ def rotateJoint(jname,degree,movetype):
          return log.getMsg('ERR_MOVEJ_INVALIDTYPE','move type is not str')
     else:
         movetype = movetype.upper()
-        if movetype != 'ROTATE' and  movetype != 'ABSOLUTE':
-            return log.getMsg('ERR_MOVEJ_INVALIDTYPE','movetype is not rotate or absolute')
+        if movetype != 'MOVE' and  movetype != 'ABSOLUTE':
+            return log.getMsg('ERR_MOVEJ_INVALIDTYPE','movetype is not move or absolute')
 
     if type(degree) is str:
         degree = float(degree)
@@ -77,7 +77,7 @@ def rotateJoint(jname,degree,movetype):
 
     encoders = hardware.refreshStepperMotorEncoderValue()
 
-    if movetype == 'ROTATE':
+    if movetype == 'MOVE':
         newdegree = encoders[joint_id]['degree'] + degree
     else:
         # put joint into absolute degree, need add existing position
@@ -85,11 +85,6 @@ def rotateJoint(jname,degree,movetype):
         newdegree = degree
         exisdegree = encoders[joint_id]['degree']
         degree = newdegree - exisdegree
-
-
-
-
-
     newdegreestr = str(newdegree)
     result = hardware.rotateJoint(joint_id, degree)
 
@@ -126,7 +121,7 @@ def runCalibration(jname):
         # joints = [1, 0,0,0,0,0]
         result = hardware.goAllJointLimit(joints)
         # hardware.moveFromLimitToRestPosition(alljoints)
-        result2 = moveRestPosition()
+        result2 = moveRestPosition(joints)
         if result != "OK":
             return log.getMsg(result, "Cannot move all joint into limit switch")
     else:
@@ -135,10 +130,14 @@ def runCalibration(jname):
     return '{"code":"OK","msg":""}' #log.getMsg("OK", "");
 
 # move arm's joints to rest positions
-def moveRestPosition():
-    alljoints = [1,1,1,1,1,1]
-    # alljoints = [1, 0,0,0,0,0]
-    return hardware.moveFromLimitToRestPosition(alljoints)
+def moveRestPosition(joints):
+
+    for i in range (0,paras.jointqty):
+        restpos =paras.jsetting[i]["restpos"]
+        jname = 'J'+str(i+1)
+        if joints[i]==1:
+            rotateJoint(jname, restpos, 'absolute')
+    return log.getMsg("OK","all joint at rest position now")
 
 def updateJointValue():
     encodervalue = hardware.refreshStepperMotorEncoderValue()

@@ -37,7 +37,7 @@ echo "done\n"
 ##### move join  ####
 #J1
 echo "Move J1 -90 degree..."
-curl http://127.0.0.1:5000/move_j/J1?degree=-90&movetype=rotate
+curl http://127.0.0.1:5000/move_j/J1?degree=-90&movetype=move
 echo "done\n"
 
 echo "Move J1 back to 0..."
@@ -46,56 +46,56 @@ echo "done\n"
 
 #J2
 echo "Move J2 80 degree..."
-curl http://127.0.0.1:5000/move_j/J2?degree=80&movetype=rotate
+curl http://127.0.0.1:5000/move_j/J2?degree=80&movetype=move
 echo "done\n"
 
 echo "Move J2 another 30 degree wish to break limit ..."
-curl http://127.0.0.1:5000/move_j/J2?degree=30&movetype=rotate
+curl http://127.0.0.1:5000/move_j/J2?degree=30&movetype=move
 echo "done\n"
 
 echo "Move J2 back to 0..."
-curl http://127.0.0.1:5000/move_j/J2?degree=-80&movetype=rotate
+curl http://127.0.0.1:5000/move_j/J2?degree=-80&movetype=move
 echo "done\n"
 
 #J3
 echo "13. Move J3 -80 degree..."
-curl http://127.0.0.1:5000/move_j/J3?degree=80&movetype=rotate
+curl http://127.0.0.1:5000/move_j/J3?degree=80&movetype=move
 echo "done\n"
 
 echo "14. Move J3 back to 0..."
-curl http://127.0.0.1:5000/move_j/J3?degree=-80&movetype=rotate
+curl http://127.0.0.1:5000/move_j/J3?degree=-80&movetype=move
 echo "done\n"
 
 #J4
 echo "ove J4 90 degree..."
-curl http://127.0.0.1:5000/move_j/J4?degree=-90&movetype=rotate
+curl http://127.0.0.1:5000/move_j/J4?degree=-90&movetype=move
 echo "done\n"
 
 echo "Move J4 back to 0..."
-curl http://127.0.0.1:5000/move_j/J4?degree=90&movetype=rotate
+curl http://127.0.0.1:5000/move_j/J4?degree=90&movetype=move
 echo "done\n"
 
 #J5
 echo "Move J5 -90 degree..."
-curl http://127.0.0.1:5000/move_j/J5?degree=-90&movetype=rotate
+curl http://127.0.0.1:5000/move_j/J5?degree=-90&movetype=move
 echo "done\n"
 
 echo "Move J5 back to 0..."
-curl http://127.0.0.1:5000/move_j/J5?degree=90&movetype=rotate
+curl http://127.0.0.1:5000/move_j/J5?degree=90&movetype=move
 echo "done\n"
 
 #J6
 echo "Move J6 -90 degree..."
-curl http://127.0.0.1:5000/move_j/J6?degree=-90&movetype=rotate
+curl http://127.0.0.1:5000/move_j/J6?degree=-90&movetype=move
 echo "done\n"
 
 echo "Move J6 back to 0..."
-curl http://127.0.0.1:5000/move_j/J6?degree=90&movetype=rotate
+curl http://127.0.0.1:5000/move_j/J6?degree=90&movetype=move
 echo "done\n"
 
 #recheck ifo
 echo "ry get machine info again"
-curl http://127.0.0.1:5000/info&movetype=rotate
+curl http://127.0.0.1:5000/info&movetype=move
 echo "\n"
 
 
