@@ -56,15 +56,16 @@ def moveJoint(jointname):
 
 @app.route('/movetrack')
 def tracklist():
-    return "a"
-    # return '{"status":"OK","msg":"this will return list of command for movetrack"}'
+    return '{"status":"OK","msg":"this will return list of command for movetrack"}'
 
 @app.route('/movetrack/<trackname>')
 def moveTrack(trackname):
-    # global f
-    # value =request.args.get("value")
-    return 'a'
-    # return f.moveTrack(trackname,value)
+    global f
+    mm = request.args.get("mm")
+    movetype = request.args.get("movetype")
+    print("test ok")
+    return f.moveTrack(trackname,mm,movetype)
+
 
 
 
@@ -76,6 +77,11 @@ def calibratelist():
 @app.route('/calibrate/<jointname>')
 def calibrateAction(jointname):
     return f.runCalibration(jointname)
+
+@app.route('/calibratetrack')
+def calibrateTrack():
+    return f.calibrateTrack()
+
 
 @app.route('/movetorestposition')
 def moveToRest():

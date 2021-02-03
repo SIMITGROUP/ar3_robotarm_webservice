@@ -56,11 +56,11 @@ def rotateJoint(jname,degree,movetype):
     global paras
     #validate movetype is received, and with proper value
     if type(movetype) is not str:
-         return log.getMsg('ERR_MOVEJ_INVALIDTYPE','move type is not str')
+         return log.getMsg('ERR_MOVE_INVALIDTYPE','move type is not str')
     else:
         movetype = movetype.upper()
         if movetype != 'MOVE' and  movetype != 'ABSOLUTE':
-            return log.getMsg('ERR_MOVEJ_INVALIDTYPE','movetype is not move or absolute')
+            return log.getMsg('ERR_MOVE_INVALIDTYPE','movetype is not move or absolute')
 
     if type(degree) is str:
         degree = float(degree)
@@ -96,6 +96,43 @@ def rotateJoint(jname,degree,movetype):
     else:
         jsondata = log.getMsg(result,jname+" shift "+ str(degree) + " become "+ newdegreestr+ " which is within "+mindegstr+"/"+maxdegstr)
     return jsondata
+
+def calibrateTrack():
+    result = hardware.setTrackValue(0,0)
+    return log.getMsg(result,"Assign Travel Track Position to 0mm")
+
+def moveTrack(trackname, mm, movetype):
+    #at the moment, any trackname also convert to track1
+    track_id=0
+    # validate movetype is received, and with proper value
+    if type(movetype) is not str:
+        return log.getMsg('ERR_MOVE_INVALIDTYPE', 'movetype is not str')
+    else:
+        movetype = movetype.upper()
+        if movetype != 'MOVE' and movetype != 'ABSOLUTE':
+            return log.getMsg('ERR_MOVE_INVALIDTYPE', 'movetype is not move or absolute')
+
+    trackdata= hardware.getTrackValues()[track_id]
+    if type(mm) is str:
+        mm = float(mm)
+
+    if movetype == 'MOVE':
+        newmm = trackdata['mm'] + mm
+    else:
+        # put joint into absolute degree, need add existing position
+        # newdegree = currentdegree + changedegree
+        newmm = mm
+        exismm = trackdata['mm']
+        mm = newmm - exismm
+
+    bufferlength = 10
+    lengthlimit = paras.tracksetting[track_id]['length'] - bufferlength
+    newmmstr = str(newmm)
+    if newmm < 0 or newmm > lengthlimit:
+        return log.getMsg('ERR_MOVETRACK_OVERLIMIT', "Track " + trackname + " blocked cause you wish to move " + str(mm) + " mm, to "+newmmstr+". It hit limit 0 - " + str(lengthlimit))
+    else:
+        result = hardware.moveTrack(0, mm)
+        return log.getMsg(result, "Track "+trackname+" moved "+str(mm)+" mm, to "+newmmstr + ',  limit 0 - ' + str(lengthlimit))
 
 
 # define servoname and how much degree to go
@@ -143,16 +180,6 @@ def updateJointValue():
     encodervalue = hardware.refreshStepperMotorEncoderValue()
     # result: b'00 000000 A7995 B2321 C9 D7594 E2277 F3308\r\n'
     #  01 100000 A7996 B2321 C9 D7594 E2277 F3308
-
-# move travel track "distance " to "distance" mm
-def moveTrack(trackname,distance):
-    a=1
-    # if JogStepsStat.get() == 1:
-    #     TrackSteps = TrackjogEntryField.get()
-    # else:
-    #     TrackSteps = str(int((TrackStepLim / TrackLength) * CT))
-    # command = "MJT1"+TrackSteps+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n"
-
 
 # convert step no to human readable degree
 def convertStepNoToDegree(stepno):

@@ -20,10 +20,12 @@ class Hardware:
     arduinobaud = 115200
     serialwritesleep = .2
     jsetting = None
+    tracksetting = None
     jointqty = 0
     jlabels = {0: "A", 1: "B", 2: "C", 3: "D", 4: "E", 5: "F"}
     calibrationspeed = 20
     jointvalue = {}
+    trackvalue = {}
     servovalue = {}
 
 
@@ -39,7 +41,8 @@ class Hardware:
         self.jointqty = paras.jointqty
         self.jointvalue = v.jointvalue
         self.servovalue = v.servovalue
-
+        self.tracksetting = paras.tracksetting
+        self.trackvalue = v.trackvalue
 
     def connectAllSerialPort(self):
         if self.teensyport == "":
@@ -410,8 +413,36 @@ class Hardware:
         log.info("done moveToRestPosition")
         return "OK"
 
+    def setTrackValue(self,trackno,mm):
+        TrackStepLim = self.tracksetting[trackno]['steplimit']
+        TrackLength = self.tracksetting[trackno]['length']
+        self.trackvalue[trackno]["mm"] = mm
+        self.trackvalue[trackno]["step"] = int((TrackStepLim / TrackLength) * mm)
+        return "OK"
 
+    def getTrackValues(self):
+        return self.trackvalue
 
+    def moveTrack(self,trackno,mm):
+        # t + ve: MJT1772S25G15H10I20K5
+        # t - ve: MJT0772S25G15H10I20K5
+        TrackStepLim = self.tracksetting[trackno]['steplimit']
+        TrackLength = self.tracksetting[trackno]['length']
+        absmm = abs(mm)
+        TrackSteps = str(int((TrackStepLim / TrackLength) * absmm))
+        Speed = str(25)  # value in %, shall fetch from runtime variables
+        ACCdur = str(15)  # accelerartion duration
+        ACCspd = str(10)  # accelerartion speed %
+        DECdur = str(20)  # deceleration duration
+        DECspd = str(5)  # deceleration duration %
+        direction = 0
+        if mm > 0:
+            direction = 1
+        command = "MJT"+str(direction) + TrackSteps + "S" + Speed + "G" + ACCdur + "H" + ACCspd + "I" + DECdur + "K" + DECspd
+        board = self.ser_teensy  # most of the case, using teensy, this place reserved for future enhancement
+        result = self.writeIO(board, command)
+        result2 = self.setTrackValue(trackno,mm)
+        return result
     # #move joints into rest position, [1,1,1,1,1,1] = all, [1,0,0,0,0,0]
     # def goToRestPosition(self,joints):
     #     print("move to rest position")
@@ -423,3 +454,5 @@ class Hardware:
     #     print("done")
     #     return "OK"
     # calibration single joint to limit switch
+
+

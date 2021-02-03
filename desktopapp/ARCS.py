@@ -2347,7 +2347,9 @@ def TrackjogNeg():
     TrackSteps = str(int((TrackStepLim/TrackLength)*CT))
   if (TrackcurPos - (float(TrackSteps) * (TrackLength/TrackStepLim)) >= 0):
     command = "MJT0"+TrackSteps+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n"
+    print("t -ve:",command)
     ser.write(command.encode())    
+
     ser.flushInput()
     time.sleep(.2)
     ser.read()  	
@@ -2382,6 +2384,7 @@ def TrackjogPos():
     TrackSteps = str(int((TrackStepLim/TrackLength)*CT))
   if (TrackcurPos + (float(TrackSteps) * (TrackLength/TrackStepLim)) <= TrackLength):
     command = "MJT1"+TrackSteps+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"\n"
+    print("t +ve:",command)
     ser.write(command.encode())    
     ser.flushInput()
     time.sleep(.2)

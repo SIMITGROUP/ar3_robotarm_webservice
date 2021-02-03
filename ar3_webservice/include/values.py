@@ -10,3 +10,7 @@ jointvalue={
     4:{"degree":0,"step":0},
     5:{"degree":0,"step":0}
 }
+
+trackvalue={
+    0:{"mm":0,"step":0},
+}
