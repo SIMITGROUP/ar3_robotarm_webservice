@@ -9,11 +9,27 @@ All http traffic use http GET at the moment, for testing and design simplicity, 
 ** NO authentication function in this stage yet. We have to build authentication backend before launch it.
 
 # Setup
-1. Edit `ar3_robotarm_webservice/ar3_webservice/include/values.py`, change the teensy and arduino port value to match your computer setting. Example:
+1. Edit configuration files
+`ar3_robotarm_webservice/ar3_webservice/include/values.py` and `ar3_robotarm_webservice/ar3_webservice/include/armparameters.py`
+change the teensy and arduino port value to match your computer setting. Example:
+
+windows
 ```
-windows, Teensy=COM3, Arduino Mega: COM4)
-linux, Teensy=/dev/ttyACM0, Arduino Mega=/dev/ttyUSB0
-MAC, Teensy=/dev/tty.usbmodem70426001 (or /dev/cu.usbmodem...), Arduino Mega=/dev/tty.usbserial-14410 (or /dev/cu.usbserial...)
+teensyport="COM3"
+arduinoport="COM4"
+** above value will auto assign if you no make any changes. if you luck and port exactly same, the web service just work without configure it.
+```
+linux
+```
+teensyport="/dev/ttyACM0"
+arduinoport="/dev/ttyUSB0"
+** above value will auto assign if you no make any changes. if you luck and port exactly same with me, the web service just work without configure it.
+```
+MAC
+```
+teensyport="/dev/tty.usbmodemxxxxx"
+arduinoport="/dev/tty.usbserial-xxxx"
+** I wrote special file check is there any similar file name in /dev folder, if yes it help you configure automatically
 ```
 You can double check port using Arduino IDE if you not sure. 
 
