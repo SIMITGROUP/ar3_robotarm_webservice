@@ -17,19 +17,19 @@ windows
 ```
 teensyport="COM3"
 arduinoport="COM4"
-** above value will auto assign if you no make any changes. if you luck and port exactly same, the web service just work without configure it.
+# above value will auto assign if you no make any changes. if you luck and port exactly same, the web service just work without configure it.
 ```
 linux
 ```
 teensyport="/dev/ttyACM0"
 arduinoport="/dev/ttyUSB0"
-** above value will auto assign if you no make any changes. if you luck and port exactly same with me, the web service just work without configure it.
+# above value will auto assign if you no make any changes. if you luck and port exactly same with me, the web service just work without configure it.
 ```
 MAC
 ```
 teensyport="/dev/tty.usbmodemxxxxx"
 arduinoport="/dev/tty.usbserial-xxxx"
-** I wrote special file check is there any similar file name in /dev folder, if yes it help you configure automatically
+# I wrote special file check is there any similar file name in /dev folder, if yes it help you configure automatically
 ```
 You can double check port using Arduino IDE if you not sure. 
 
