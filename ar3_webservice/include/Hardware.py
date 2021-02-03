@@ -7,6 +7,7 @@ import serial.tools.list_ports
 import time
 import log
 import platform
+import os.path
 import glob # use for search serial port file in mac
 #define a class to connect the things
 class Hardware:
@@ -90,24 +91,34 @@ class Hardware:
         return serial.Serial(portname, baud)
 
     def checkAllBoard(self):
-
         if self.checkTeensy() == False:
             return "ERR_CHECK_TEENSYOFF"
-        elif self.checkArduino() == False:
+        if self.checkArduino() == False:
             return "ERR_CHECK_ARDUINOOFF"
-        else:
-            return "OK"
+        return "OK"
 
     def checkTeensy(self):
-        return self.checkSerial(self.ser_teensy)
+        return self.checkSerial("teensy")
 
     def checkArduino(self):
-        return self.checkSerial(self.ser_arduino)
+        return self.checkSerial("arduino")
 
-    def checkSerial(self,ser):
+    def checkSerial(self,boardname):
         try:
+            osname = platform.system()
+            # windows temporary always return true
+            if osname == "Windows":
+                return True
+            else:
+                if boardname == "teensy":
+                    return os.path.exists(self.teensyport)
+                elif boardname == "arduino":
+                    return os.path.exists(self.arduinoport)
+                else:
+                    return False
 
-            return ser.isOpen()
+
+
         except:
             return False
 
@@ -118,10 +129,15 @@ class Hardware:
         command=command+"\n"
         log.debug("serial command: " + command)
         cmdstr = command.encode()
-        board.write(cmdstr)
-        board.flushInput()
-        time.sleep(self.serialwritesleep )
-        result = board.read()
+        try:
+            board.write(cmdstr)
+            board.flushInput()
+            time.sleep(self.serialwritesleep )
+            result = board.read()
+        except Exception as e:
+            errorcode = "ERR_SERIAL_DEVICENOTWRITABLE"
+            log.error(errorcode+": cannot send signal to serial board")
+            return errorcode
         log.info("access done")
         return "OK"
 
@@ -131,10 +147,15 @@ class Hardware:
         command = command + "\n"
         log.debug("serial command: " + command)
         cmdstr = command.encode()
-        board.write(cmdstr)
-        time.sleep(self.serialwritesleep)
-        result = board.readline()
-        log.debug(result)
+        try:
+            board.write(cmdstr)
+            time.sleep(self.serialwritesleep)
+            result = board.readline()
+            log.debug(result)
+        except Exception as e:
+            errorcode = "ERR_SERIAL_DEVICENOTWRITABLE"
+            log.error(errorcode+": cannot send signal to serial board")
+            return errorcode
         log.info("access done")
         return result
 

@@ -23,9 +23,11 @@ def index():
     return '{"status":"OK","msg":"Welcome index page of AR3 webservice, you can call /help, /info now"}'
 
 def info():
-    result1 = json.dumps(hardware.checkMachineStatus())
-    result2 = hardware.checkAllBoard()
-    return result2
+    boardstatus = hardware.checkAllBoard()
+    jointstatus = hardware.checkMachineStatus()
+    result = {"jointstatus":jointstatus,"boardstatus":boardstatus}
+    return json.dumps(result)
+
 def checkARMConnectionReady():
     print("checkARMConnectionReady")
     result = hardware.checkAllBoard()
@@ -43,14 +45,23 @@ def initSystemVariables():
         # J1PosAngLim = float(J1PosAngLimEntryField.get())
         # J1StepLim = int(J1StepLimEntryField.get())
         # J1DegPerStep = float((J1PosAngLim - J1NegAngLim) / float(J1StepLim))
-        paras.jsetting[i]["degperstep"] = round( float((maxdeg - mindeg)/float(steplimit)),8)
+        paras.jsetting[i]["degperstep"] = round( float((maxdeg - mindeg
+                                                        )/float(steplimit)),8)
         #print(i,".maxdeg",maxdeg,"mindeg",mindeg,"steplimit",steplimit,"degperstep",paras.jsetting[i]["degperstep"])
         #jointvalue[i]=readJointValue(i)
 
 
-# rotate joint "jointno" further by @angle degree
-def rotateJoint(jname,degree):
+# rotate joint "jointno" according movetype, "absolute" = absolute degree, "rotate"= rotate n degree
+def rotateJoint(jname,degree,movetype):
     global paras
+    #validate movetype is received, and with proper value
+    if type(movetype) is not str:
+         return log.getMsg('ERR_MOVEJ_INVALIDTYPE','move type is not str')
+    else:
+        movetype = movetype.upper()
+        if movetype != 'ROTATE' and  movetype != 'ABSOLUTE':
+            return log.getMsg('ERR_MOVEJ_INVALIDTYPE','movetype is not rotate or absolute')
+
     if type(degree) is str:
         degree = float(degree)
 
@@ -63,8 +74,22 @@ def rotateJoint(jname,degree):
 
     if joint_id < 0 and joint_id > paras.jointqty :
         return log.getMsg('ERR_JOINT_OUT_OF_RANGE','')
+
     encoders = hardware.refreshStepperMotorEncoderValue()
-    newdegree = encoders[joint_id]['degree'] + degree
+
+    if movetype == 'ROTATE':
+        newdegree = encoders[joint_id]['degree'] + degree
+    else:
+        # put joint into absolute degree, need add existing position
+        # newdegree = currentdegree + changedegree
+        newdegree = degree
+        exisdegree = encoders[joint_id]['degree']
+        degree = newdegree - exisdegree
+
+
+
+
+
     newdegreestr = str(newdegree)
     result = hardware.rotateJoint(joint_id, degree)
 
