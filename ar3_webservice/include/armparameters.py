@@ -29,3 +29,5 @@ ACCdur =15 # accelerartion duration
 ACCspd = 10 # accelerartion speed %
 DECdur = 20 # deceleration duration
 DECspd = 5 # deceleration duration %
+
+

@@ -9,6 +9,8 @@ import log
 import platform
 import os.path
 import glob # use for search serial port file in mac
+import pickle
+
 #define a class to connect the things
 class Hardware:
 
@@ -36,11 +38,11 @@ class Hardware:
     # constructor, connector to teensy and arduino when initialize
 
     def __init__(self,v,paras):
+        self.cachefile = 'memory.cache'
         self.teensyport = v.teensyport
         self.teensybaud = paras.teensybaudrate
         self.arduinoport = v.arduinoport
         self.arduinobaud = paras.arduinobaudrate
-        self.connectAllSerialPort()
         self.jsetting = paras.jsetting
         self.jointqty = paras.jointqty
         self.jointvalue = v.jointvalue
@@ -53,6 +55,14 @@ class Hardware:
         self.ACCspd = paras.ACCspd
         self.DECdur = paras.DECdur
         self.DECspd = paras.DECspd
+        self.loadData()
+        self.connectAllSerialPort()
+        # self.restoreAllServo()
+        self.saveData()
+        self.refreshStepperMotorEncoderValue()
+
+
+
     def connectAllSerialPort(self):
         if self.teensyport == "":
             self.teensyport = self.autoDetectSerialPort('teensy')
@@ -64,9 +74,14 @@ class Hardware:
         self.ser_arduino = self.connectSerial(self.arduinoport, self.arduinobaud)
         return "OK"
 
+    def saveData(self):
+        pickle.dump([self.teensyport,self.arduinoport,self.servovalue,self.jointvalue,self.trackvalue], open(self.cachefile, "wb"))
+
+    def loadData(self):
+        if os.path.isfile(self.cachefile):
+            self.teensyport,self.arduinoport,self.servovalue,self.jointvalue,self.trackvalue = pickle.load(open(self.cachefile,"rb"))
 
     def autoDetectSerialPort(self,boardname):
-        print("run autoDetectSerialPort")
         defteensyboard = ''
         defarduinoboard = ''
         osname = platform.system()
@@ -151,6 +166,7 @@ class Hardware:
             log.error(errorcode+": cannot send signal to serial board")
             return errorcode
         log.info("access done")
+        self.saveData()
         return "OK"
 
     # read serial command
@@ -169,6 +185,7 @@ class Hardware:
             log.error(errorcode+": cannot send signal to serial board")
             return errorcode
         log.info("access done")
+        self.saveData()
         return result
 
     def convertDegToStep(self,deg,degperstep):
@@ -343,6 +360,11 @@ class Hardware:
         return result
 
 
+    def restoreAllServo(self):
+        for k,v in self.servovalue.items():
+            self.setServo(k,v)
+
+
     def setServo(self,servoname, degree):
         if (self.checkKey(self.servosetting, servoname) == False):
             return log.getMsg('ERR_SERVO_INVALIDSERVO', servoname + ' does not exists')
@@ -373,6 +395,7 @@ class Hardware:
         board = self.ser_arduino # most of the case, using arduino, this place reserved for future enhancement which add servo into more board
         result =  self.writeIO(board,command)
         self.servovalue[servoname] = degree
+        self.saveData()
         return result
 
     def checkJointNo(self,jointno):
@@ -427,13 +450,7 @@ class Hardware:
             self.jointvalue[i]["degree"] = currentdegree
             log.debug("currentdegree: "+str(currentdegree)+", degreeperstep:"+str(degperstep)+", currentstep: " + str(currentstep) + ", degreefromlimit:"+str(degreefromlimit))
         log.info("done refreshStepperMotorEncoderValue")
-
-        # 0: {"maxdeg": 170, "mindeg": -170, "steplimit": 15110, "degperstep": 0, "caldir": 0, "restpos": 0, "reststep": 7555},
-        # 1: {"maxdeg": 0, "mindeg": -129.6, "steplimit": 7198, "degperstep": 0, "caldir": 0, "restpos": -90, "reststep": 2199.3888888888887},
-        # 2: {"maxdeg": 143.7, "mindeg": 1, "steplimit": 7984, "degperstep": 0, "caldir": 1, "restpos": 1.05, "reststep": 56},
-        # 3: {"maxdeg": 164.5, "mindeg": -164.5, "steplimit": 14056, "degperstep": 0, "caldir": 0, "restpos": 0, "reststep": 7028},
-        # 4: {"maxdeg": 104.15, "mindeg": -104.15, "steplimit": 4560, "degperstep": 0, "caldir": 0, "restpos": 0, "reststep": 2280},
-        # 5: {"maxdeg": 148.1, "mindeg": -148.1, "steplimit": 6320, "degperstep": 0, "caldir": 1, "restpos": 0, "reststep": 3160},
+        self.saveData()
         return self.jointvalue
 
 
@@ -476,13 +493,6 @@ class Hardware:
         log.debug("serial command: "+command )
         log.info("done writeARMPosition")
         return "OK"
-        # 0:{"maxdeg":170, "mindeg":-170, "steplimit":15110, "degperstep": 0, "caldir":0, "restpos":0, "reststep": 7555 },
-        # 1:{"maxdeg":0, "mindeg":-129.6, "steplimit":7198, "degperstep": 0, "caldir":0, "restpos":-90, "reststep": 2199.3888888888887 },
-        # 2:{"maxdeg":143.7, "mindeg":1, "steplimit":7984, "degperstep": 0, "caldir":1, "restpos":1.05, "reststep": 56 },
-        # 3:{"maxdeg":164.5, "mindeg":-164.5, "steplimit":14056, "degperstep": 0, "caldir":0, "restpos":0, "reststep": 7028 },
-        # 4:{"maxdeg":104.15, "mindeg":-104.15, "steplimit":4560, "degperstep": 0, "caldir":0, "restpos":0, "reststep": 2280 },
-        # 5:{"maxdeg":148.1, "mindeg":-148.1, "steplimit":6320, "degperstep": 0, "caldir":1, "restpos":0, "reststep": 3160 },
-
 
     #only use during calibrate all, from arm from all limit switch back to centre rest position
     def moveFromLimitToRestPosition(self,joints):
@@ -498,20 +508,14 @@ class Hardware:
 
                 if caldir  == 0: # now stay at mindeg there
                     degree = restpos - mindeg
-                            # j1 = 0 - -170 = 170
-                            # j2 = -90 - -129.6 = 39.6
-                            # j4 = 0 - -164.5  = 164.5
-                            # j5 = 0 - -104.15 = 104.15
                 elif caldir == 1:
                     degree = restpos - maxdeg
-                        # j3 =  1.05 - 143.7 = -142.02
-                        # j6 = 0 - 148.1 = -148.1
                 else:
-                    # not supported value, ignore and no movement
                     a=1
 
                 self.rotateJoint(i, degree)
         log.info("done moveToRestPosition")
+        self.saveData()
         return "OK"
 
     # set track position value
@@ -521,6 +525,7 @@ class Hardware:
         TrackLength = self.tracksetting[trackname]['length']
         self.trackvalue[trackname]["mm"] = mm
         self.trackvalue[trackname]["step"] = int((TrackStepLim / TrackLength) * mm)
+        self.saveData()
         return "OK"
 
     def getTrackValues(self):
@@ -535,7 +540,7 @@ class Hardware:
         TrackStepLim = self.tracksetting[trackname]['steplimit']
         TrackLength = self.tracksetting[trackname]['length']
         newmm = self.trackvalue[trackname]["mm"] + mm
-        print("printmove track now")
+
         if newmm > TrackLength:
             return "ERR_MOVETRACK_OVERLIMIT"
         absmm = abs(mm)
@@ -552,6 +557,7 @@ class Hardware:
         board = self.ser_teensy  # most of the case, using teensy, this place reserved for future enhancement
         result = self.writeIO(board, command)
         result2 = self.setTrackValue(trackname,newmm)
+
         return result
 
 
