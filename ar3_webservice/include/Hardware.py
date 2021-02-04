@@ -171,6 +171,10 @@ class Hardware:
         log.info("access done")
         return result
 
+    def convertDegToStep(self,deg,degperstep):
+        jogstep = int(deg / degperstep)  # jog how many step
+        return jogstep
+
     # move joint 0/1/2.. to x degree
     def rotateJoint(self,jointno,degree):
 
@@ -204,8 +208,7 @@ class Hardware:
 
         jdir = str(direction)  # 0,1 for +/- direction
         degperstep = self.jsetting[jointno]["degperstep"]
-
-        jogstep = int(deg / degperstep)  # jog how many step
+        jogstep = self.convertDegToStep(deg,degperstep)  # jog how many step
         jogstepsstr = str(jogstep)
 
 
@@ -236,6 +239,72 @@ class Hardware:
         #newdegreestr = str(encodervalues[jointno]['degree'])
         return result
 
+    def changePosition(self,jointdata,trackdata,servodata):
+        result="OK"
+        command = "MJ"
+        jsteps={}
+        jdirs={}
+        encodervalues = self.refreshStepperMotorEncoderValue()
+        Speed = str(self.Speed)  # value in %, shall fetch from runtime variables
+        ACCdur = str(self.ACCdur)  # accelerartion duration
+        ACCspd = str(self.ACCspd)  # accelerartion speed %
+        DECdur = str(self.DECdur)  # deceleration duration
+        DECspd = str(self.DECspd)  # deceleration duration %
+        newjointsteps={}
+        newtrackdata = {}
+        for k, v in jointdata.items():
+            print(k,v)
+
+            degperstep = self.jsetting[k]['degperstep']
+            newjointsteps[k] = { 'deg': v, 'step': self.convertDegToStep(v, degperstep)}
+            deg = v - self.jointvalue[k]['degree']
+            jsteps[k] = abs(self.convertDegToStep(deg, degperstep))
+            if deg >0:
+                jdirs[k] = 1
+
+            else:
+                jdirs[k] = 0
+
+            command = command + self.jlabels[k] + str(jdirs[k]) +  str(jsteps[k])
+
+
+        for k, v in trackdata.items():
+            mmperstep = self.tracksetting[k]['mmperstep']
+            newstep = int( float(v) / float(mmperstep) )
+            currentstep = self.trackvalue[k]['step']
+            trstep = newstep - currentstep
+
+            trstepstr = str(abs(trstep)) # teensy only accept +ve value
+            if trstep > 0:
+                trdir = 1
+            else:
+                trdir = 0
+            # ar3 at the moment only support 1 track, just break after first item
+            command = command + 'T'+ str(trdir) + trstepstr
+            newtrackdata[k] = {"mm": v , "step": newstep}
+            break
+
+        command = command + "S" + Speed + "G" + ACCdur + "H" + ACCspd + "I" + DECdur + "K" + DECspd
+        command = command + "U" + str(newjointsteps[0]['step']) + "V" + str(newjointsteps[1]['step']) + "W" + str(newjointsteps[2]['step']) + \
+                  "X" + str(newjointsteps[3]['step']) + "Y" + str(newjointsteps[4]['step']) + "Z" + str(newjointsteps[5]['step']) + "\n"
+
+        #move all stepper motor, joint and track rail
+
+        # MJA0444S25G15H10I20K5U7555.0V2199.3888888888887W559X7028.0Y2280.0Z3372
+
+        result = self.writeIO(self.ser_teensy,command)
+        # result="OK"
+        # update new track data cause no encoder there
+        for k, v in trackdata.items():
+            self.trackvalue[k]= newtrackdata[k]
+
+        self.refreshStepperMotorEncoderValue()
+
+        # change servo position, 1 by 1
+        for k, v in servodata.items():
+            self.setServo(k,v)
+
+        return result
     # calibrate all joint according variable joints. [1,1,1,1,1,1] = all, [0,0,1,0,0,0] = J3 only
     def goAllJointLimit(self,joints):
         jsteps = [0,0,0,0,0,0]
@@ -456,6 +525,9 @@ class Hardware:
 
     def getTrackValues(self):
         return self.trackvalue
+
+    def getServoValues(self):
+        return self.servovalue
 
     def moveTrack(self,trackname,mm):
         # t + ve: MJT1772S25G15H10I20K5

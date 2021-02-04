@@ -1,5 +1,8 @@
 # define all system default arm parameter, it came from original dekstop app. better don;t change it
-# degperstep will calculate runtime
+
+
+
+# leave degperstep=0, it will calculate runtime
 jsetting = {
     0:{"maxdeg":170, "mindeg":-170, "steplimit":15110, "degperstep": 0, "caldir":0, "restpos":0, "reststep": 7555 },
     1:{"maxdeg":0, "mindeg":-129.6, "steplimit":7198, "degperstep": 0, "caldir":0, "restpos":-90, "reststep": 2199.3888888888887 },
@@ -9,8 +12,9 @@ jsetting = {
     5:{"maxdeg":148.1, "mindeg":-148.1, "steplimit":6320, "degperstep": 0, "caldir":1, "restpos":0, "reststep": 3160 },
 }
 
+# leave mmperstep =0, it will auto calculate
 tracksetting = {
-    't1': {"length":850,"steplimit":65650 }
+    't1': {"length":850,"steplimit":65650,"mmperstep": 0}
 }
 
 servosetting = {

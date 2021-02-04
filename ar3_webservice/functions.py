@@ -34,7 +34,6 @@ def checkARMConnectionReady():
     return result
 
 def initSystemVariables():
-    global paras
     # define all joint value
     for i in range (0,paras.jointqty):
         maxdeg =paras.jsetting[i]["maxdeg"]
@@ -44,8 +43,12 @@ def initSystemVariables():
         # J1PosAngLim = float(J1PosAngLimEntryField.get())
         # J1StepLim = int(J1StepLimEntryField.get())
         # J1DegPerStep = float((J1PosAngLim - J1NegAngLim) / float(J1StepLim))
-        paras.jsetting[i]["degperstep"] = round( float((maxdeg - mindeg
-                                                        )/float(steplimit)),8)
+        paras.jsetting[i]["degperstep"] = round( float((maxdeg - mindeg)/float(steplimit)),8)
+
+    for k,v in paras.tracksetting.items():
+        steplimit = paras.tracksetting[k]['steplimit']
+        length = paras.tracksetting[k]['length']
+        paras.tracksetting[k]['mmperstep'] = round( (length/steplimit),8)
         #print(i,".maxdeg",maxdeg,"mindeg",mindeg,"steplimit",steplimit,"degperstep",paras.jsetting[i]["degperstep"])
         #jointvalue[i]=readJointValue(i)
 
@@ -215,6 +218,50 @@ def updateJointValue():
     #  01 100000 A7996 B2321 C9 D7594 E2277 F3308
 
 
+def getAllPosition():
+    joinvalues = hardware.refreshStepperMotorEncoderValue()
+    servovalues = hardware.getServoValues()
+    trackvalues = hardware.getTrackValues()
+
+    txt = '/setposition?'
+    for k, v in joinvalues.items():
+        txt = txt + 'J' + str(k+1) + '=' + str(v['degree']) + '&'
+    print("txt=")
+    print(txt)
+    for k, v in servovalues.items():
+        txt = txt + k + '=' + str(v) + '&'
+
+    for k, v in trackvalues.items():
+        txt = txt+ k+'='+ str(v['mm']) +'&'
+    return txt
+
+def setPosition(allpara):
+    # sample url =  /setposition?J1=19.71&J2=-90.22&J3=1.89&J4=-0.07&J5=-0.23&J6=-0.47&gripper1=0&t1=0&
+    # commandCalc = "MJA"+J1dir+J1steps+"B"+J2dir+J2steps+"C"+J3dir+J3steps+"D"+J4dir+J4steps+"E"+J5dir+J5steps+"F"+J6dir+J6steps+"T"+TRdir+TRstep+"S"+newSpeed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"U"+str(J1StepCur)+"V"+str(J2StepCur)+"W"+str(J3StepCur)+"X"+str(J4StepCur)+"Y"+str(J5StepCur)+"Z"+str(J6StepCur)+"\n"
+    jointdata = {}
+    trackdata = {}
+    servodata = {}
+
+    for k, v in allpara.items():
+        if type(v) is str or type(v) is int:
+            v=float(v)
+
+        if checkKey(paras.servosetting,k):
+            servodata[k]=v
+        elif  checkKey(paras.tracksetting,k):
+            trackdata[k]=v
+        elif len(k) ==2 and ( left(k,1)  == 'j' or left(k,1) =='J') and right(k,1).isnumeric(): # j1,j2,j3,j4,j5,j6
+            jointno=int(right(k,1))-1  #J1 => 0, J2=>1
+            jointdata[jointno]=v
+        else:
+            #dont know what is the parameter for, ignore it
+            a=1
+    print("trackdata")
+    print(trackdata)
+    result = hardware.changePosition(jointdata,trackdata,servodata)
+    return result
+
+#### below store others function for string and data processing only ####
 def left(s, amount):
     return s[:amount]
 

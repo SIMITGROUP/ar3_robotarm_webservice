@@ -90,11 +90,12 @@ def moveToRest():
 
 @app.route('/getposition')
 def runGetPosition():
-    return f.moveRestPosition([1,1,1,1,1,1])
+    return f.getAllPosition()
 
 @app.route('/setposition')
 def runSetPosition():
-    return f.moveRestPosition([1,1,1,1,1,1])
+    parameters = request.args
+    return f.setPosition(parameters)
 
 
 
