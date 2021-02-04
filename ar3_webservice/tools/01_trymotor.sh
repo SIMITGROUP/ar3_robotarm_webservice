@@ -1,11 +1,11 @@
 #/bin/bash
-curl http://127.0.0.1:5000/servo/mygripper?degree=90
+curl http://127.0.0.1:5000/servo/gripper1?degree=90
 sleep 2
-curl http://127.0.0.1:5000/servo/mygripper?degree=120
+curl http://127.0.0.1:5000/servo/gripper1?degree=120
 sleep 2
-curl http://127.0.0.1:5000/servo/mygripper?degree=140
+curl http://127.0.0.1:5000/servo/gripper1?degree=140
 sleep 2
-curl http://127.0.0.1:5000/servo/mygripper?degree=90
+curl http://127.0.0.1:5000/servo/gripper1?degree=90
 sleep 2
 
 curl http://127.0.0.1:5000//move_j/j1?degree=-10&movetype=move

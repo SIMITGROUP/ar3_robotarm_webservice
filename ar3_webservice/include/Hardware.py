@@ -27,7 +27,11 @@ class Hardware:
     jointvalue = {}
     trackvalue = {}
     servovalue = {}
-
+    Speed = 0
+    ACCdur = 0
+    ACCspd = 0
+    DECdur = 0
+    DECspd = 0
 
     # constructor, connector to teensy and arduino when initialize
 
@@ -40,10 +44,15 @@ class Hardware:
         self.jsetting = paras.jsetting
         self.jointqty = paras.jointqty
         self.jointvalue = v.jointvalue
+        self.servosetting = paras.servosetting
         self.servovalue = v.servovalue
         self.tracksetting = paras.tracksetting
         self.trackvalue = v.trackvalue
-
+        self.Speed = paras.Speed
+        self.ACCdur = paras.ACCdur
+        self.ACCspd = paras.ACCspd
+        self.DECdur = paras.DECdur
+        self.DECspd = paras.DECspd
     def connectAllSerialPort(self):
         if self.teensyport == "":
             self.teensyport = self.autoDetectSerialPort('teensy')
@@ -206,11 +215,11 @@ class Hardware:
             encodervalues[jointno]["step"] = int(encodervalues[jointno]["step"]) + jogstep
 
 
-        Speed = str(25) # value in %, shall fetch from runtime variables
-        ACCdur = str(15) # accelerartion duration
-        ACCspd = str(10) # accelerartion speed %
-        DECdur = str(20) # deceleration duration
-        DECspd = str(5) # deceleration duration %
+        Speed = str(self.Speed) # value in %, shall fetch from runtime variables
+        ACCdur = str(self.ACCdur) # accelerartion duration
+        ACCspd = str(self.ACCspd) # accelerartion speed %
+        DECdur = str(self.DECdur) # deceleration duration
+        DECspd = str(self.DECspd) # deceleration duration %
         J1StepCur = str(encodervalues[0]["step"])
         J2StepCur = str(encodervalues[1]["step"])
         J3StepCur = str(encodervalues[2]["step"])
@@ -224,7 +233,7 @@ class Hardware:
         board = self.ser_teensy  # most of the case, using teensy, this place reserved for future enhancement
         result =  self.writeIO(board, command)
         encodervalues =self.refreshStepperMotorEncoderValue()
-        newdegreestr = str(encodervalues[jointno]['degree'])
+        #newdegreestr = str(encodervalues[jointno]['degree'])
         return result
 
     # calibrate all joint according variable joints. [1,1,1,1,1,1] = all, [0,0,1,0,0,0] = J3 only
@@ -264,21 +273,38 @@ class Hardware:
         self.moveFromLimitToRestPosition(joints)
         return result
 
+
     def setServo(self,servoname, degree):
+        if (self.checkKey(self.servosetting, servoname) == False):
+            return log.getMsg('ERR_SERVO_INVALIDSERVO', servoname + ' does not exists')
+
+
         if type(degree) is int:
             degree = str(degree)
-        command = "SV0P"+degree
+        print("servoname:")
+        print(servoname)
+
+        #identify which servo no, cause AR3 put firmware into arduino, recognise as 0,1,2,3
+        servonumber=9999
+        i = 0
+        for k,v in self.servosetting.items():
+            if k == servoname:
+                servonumber = i
+            i = i + 1
+
+        maxdeg = self.servosetting[servoname]['maxdeg']
+        mindeg = self.servosetting[servoname]['mindeg']
+
+        if degree > maxdeg:
+            return 'ERR_SERVO_MAX'
+        elif degree < mindeg :
+            return 'ERR_SERVO_MIN'
+
+        command = "SV"+str(servonumber)+"P"+str(int(degree))
         board = self.ser_arduino # most of the case, using arduino, this place reserved for future enhancement which add servo into more board
         result =  self.writeIO(board,command)
         self.servovalue[servoname] = degree
-
-    def readEncoderValue(self,jointno):
-        checkjointres = self.checkJointNo(jointno)
-        if checkjointres != "OK":
-            return checkjointres
-
-        print("readEncoderValue:", jointno)
-        return 0
+        return result
 
     def checkJointNo(self,jointno):
         if(type(jointno) is not int):
@@ -349,8 +375,14 @@ class Hardware:
     def checkMachineStatus(self):
         log.info("enter checkMachineStatus")
         encodervalues = self.refreshStepperMotorEncoderValue() #arrays
+        result = {
+            "jointvalues":self.jointvalue,
+            "servovalues": self.servovalue,
+            "trackvalues": self.trackvalue,
+            "board":self.checkAllBoard()
+        }
         log.info("done checkMachineStatus")
-        return encodervalues
+        return result
 
     # set arm position, rest/limit position follow setting in armparameters.py
     def writeARMPosition(self,writeType,joints):
@@ -413,46 +445,46 @@ class Hardware:
         log.info("done moveToRestPosition")
         return "OK"
 
-    def setTrackValue(self,trackno,mm):
-        TrackStepLim = self.tracksetting[trackno]['steplimit']
-        TrackLength = self.tracksetting[trackno]['length']
-        self.trackvalue[trackno]["mm"] = mm
-        self.trackvalue[trackno]["step"] = int((TrackStepLim / TrackLength) * mm)
+    # set track position value
+    def setTrackValue(self,trackname,mm):
+
+        TrackStepLim = self.tracksetting[trackname]['steplimit']
+        TrackLength = self.tracksetting[trackname]['length']
+        self.trackvalue[trackname]["mm"] = mm
+        self.trackvalue[trackname]["step"] = int((TrackStepLim / TrackLength) * mm)
         return "OK"
 
     def getTrackValues(self):
         return self.trackvalue
 
-    def moveTrack(self,trackno,mm):
+    def moveTrack(self,trackname,mm):
         # t + ve: MJT1772S25G15H10I20K5
         # t - ve: MJT0772S25G15H10I20K5
-        TrackStepLim = self.tracksetting[trackno]['steplimit']
-        TrackLength = self.tracksetting[trackno]['length']
+        TrackStepLim = self.tracksetting[trackname]['steplimit']
+        TrackLength = self.tracksetting[trackname]['length']
+        newmm = self.trackvalue[trackname]["mm"] + mm
+        print("printmove track now")
+        if newmm > TrackLength:
+            return "ERR_MOVETRACK_OVERLIMIT"
         absmm = abs(mm)
         TrackSteps = str(int((TrackStepLim / TrackLength) * absmm))
-        Speed = str(25)  # value in %, shall fetch from runtime variables
-        ACCdur = str(15)  # accelerartion duration
-        ACCspd = str(10)  # accelerartion speed %
-        DECdur = str(20)  # deceleration duration
-        DECspd = str(5)  # deceleration duration %
+        Speed = str(self.Speed)  # value in %, shall fetch from runtime variables
+        ACCdur = str(self.ACCdur)  # accelerartion duration
+        ACCspd = str(self.ACCspd)  # accelerartion speed %
+        DECdur = str(self.DECdur)  # deceleration duration
+        DECspd = str(self.DECspd)  # deceleration duration %
         direction = 0
         if mm > 0:
             direction = 1
         command = "MJT"+str(direction) + TrackSteps + "S" + Speed + "G" + ACCdur + "H" + ACCspd + "I" + DECdur + "K" + DECspd
         board = self.ser_teensy  # most of the case, using teensy, this place reserved for future enhancement
         result = self.writeIO(board, command)
-        result2 = self.setTrackValue(trackno,mm)
+        result2 = self.setTrackValue(trackname,newmm)
         return result
-    # #move joints into rest position, [1,1,1,1,1,1] = all, [1,0,0,0,0,0]
-    # def goToRestPosition(self,joints):
-    #     print("move to rest position")
-    #     for i in range(0, self.jointqty):
-    #         #only selected joint move to rest position
-    #         if joints[i] == 1:
-    #             degree = int(self.jsetting[i]["restpos"])
-    #             self.rotateJoint(joints[i],degree)
-    #     print("done")
-    #     return "OK"
-    # calibration single joint to limit switch
 
 
+    def checkKey(self,arr, key):
+        if key in arr.keys():
+            return True
+        else:
+            return False

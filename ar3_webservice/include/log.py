@@ -2,11 +2,15 @@ errorcodes ={
     "OK":"",
     "ERR_SERVO_MAX": "Servo maximum limit hit",
     "ERR_SERVO_MIN": "Servo minimum limit hit",
+    "ERR_SERVO_INVALIDVALUE": "You shall submit integer or name of position using variable 'value'",
+    "ERR_SERVO_INVALIDSERVO": "Servo name not exists in servo database",
+    "ERR_TRACK_INVALIDSERVO": "Track name not exists in track database",
     "ERR_CONNECT_FAILED01":"Robot arm serial connection failed",
     "ERR_JOINT_OUT_OF_RANGE":"Invalid joint no",
     "ERR_JOINT_WRONGNAME":"Joint name shall be J1, J2,j1,j2...",
 
-    "ERR_JOINT_WRONG_DATA_TYPE":"Joint value is not integer",
+    "ERR_JOINT_WRONG_DATA_TYPE":"Submited value is not number",
+    "ERR_TRACK_WRONG_DATA_TYPE":"Submited value is not number",
     "ERR_ENCODER_NOREPLY":"No receive response from AR3 joint's encoder",
     "ERR_UNKNOWN_WRITEARM_POSITIONTYPE": "Unknown write arm position type, rest/limit only is supported",
     "ERR_ROTATEJOINT_OVERMAXLIMIT": "One of the joint received rotation request which is over maximum degree limit",
@@ -20,7 +24,7 @@ ERROR = 1
 WARNING = 2
 INFO = 3
 DEBUG = 4
-showloglevel = WARNING
+showloglevel = DEBUG
 
 def getMsg(code,moremsg):
     # e standby for suitable environment use

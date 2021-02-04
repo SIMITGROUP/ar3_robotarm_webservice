@@ -34,14 +34,14 @@ def info():
 
 @app.route('/servo')
 def servolist():
-    return '{"status":"OK","msg":"this will return list of servo in database"}'
+    return '{"status":"OK","msg":"this will return servo guidance"}'
 
 
 @app.route('/servo/<servo>')
 def moveServo(servo):
     global f
-    degree =int(request.args.get("degree"))
-    return f.changeServoValue(servo,degree)
+    value =request.args.get("value")
+    return f.changeServoValue(servo,value)
 
 @app.route('/move_j')
 def joiintlist():
@@ -63,10 +63,7 @@ def moveTrack(trackname):
     global f
     mm = request.args.get("mm")
     movetype = request.args.get("movetype")
-    print("test ok")
     return f.moveTrack(trackname,mm,movetype)
-
-
 
 
 
@@ -79,26 +76,41 @@ def calibrateAction(jointname):
     return f.runCalibration(jointname)
 
 @app.route('/calibratetrack')
-def calibrateTrack():
-    return f.calibrateTrack()
+def displayCalibrateTrack():
+    return '{"status":"OK","msg":"this will return list of calibration track option"}'
+
+@app.route('/calibratetrack/<trackname>')
+def calibrateTrack(trackname):
+    return f.calibrateTrack(trackname)
 
 
 @app.route('/movetorestposition')
 def moveToRest():
     return f.moveRestPosition([1,1,1,1,1,1])
 
+@app.route('/getposition')
+def runGetPosition():
+    return f.moveRestPosition([1,1,1,1,1,1])
+
+@app.route('/setposition')
+def runSetPosition():
+    return f.moveRestPosition([1,1,1,1,1,1])
+
+
+
 ## some override setting at below, just ignore it don't change ##
 @app.before_request
 def before_show():
     armstatus = f.checkARMConnectionReady()
-    if  f.checkARMConnectionReady() == "OK":
-        return f.updateJointValue()
+    if armstatus == "OK":
+        result = f.updateJointValue()
+        # return result
     else:
-        return f.checkARMConnectionReady()
+        return armstatus
 
 
 @app.after_request
-def apply_caching(response):
+def apply_header(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.headers["Content-Type"] = "application/json"
     return response

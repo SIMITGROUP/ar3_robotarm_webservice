@@ -23,9 +23,8 @@ def index():
     return '{"status":"OK","msg":"Welcome index page of AR3 webservice, you can call /help, /info now"}'
 
 def info():
-    boardstatus = hardware.checkAllBoard()
-    jointstatus = hardware.checkMachineStatus()
-    result = {"jointstatus":jointstatus,"boardstatus":boardstatus}
+
+    result = hardware.checkMachineStatus()
     return json.dumps(result)
 
 def checkARMConnectionReady():
@@ -53,7 +52,7 @@ def initSystemVariables():
 
 # rotate joint "jointno" according movetype, "absolute" = absolute degree, "move"= rotate n degree
 def rotateJoint(jname,degree,movetype):
-    global paras
+    log.info("access rotateJoint")
     #validate movetype is received, and with proper value
     if type(movetype) is not str:
          return log.getMsg('ERR_MOVE_INVALIDTYPE','move type is not str')
@@ -95,15 +94,19 @@ def rotateJoint(jname,degree,movetype):
         jsondata = log.getMsg(result, jname+" shift "+ str(degree) + " become "+ newdegreestr+" which is not within "+mindegstr+"/"+maxdegstr)
     else:
         jsondata = log.getMsg(result,jname+" shift "+ str(degree) + " become "+ newdegreestr+ " which is within "+mindegstr+"/"+maxdegstr)
+
+    log.info("done rotateJoint")
     return jsondata
 
-def calibrateTrack():
-    result = hardware.setTrackValue(0,0)
+def calibrateTrack(trackname):
+    result = hardware.setTrackValue(trackname,0)
     return log.getMsg(result,"Assign Travel Track Position to 0mm")
 
 def moveTrack(trackname, mm, movetype):
     #at the moment, any trackname also convert to track1
-    track_id=0
+    if (checkKey(paras.tracksetting, trackname) == False):
+        return log.getMsg('ERR_TRACK_INVALIDTRACK', trackname + ' does not exists')
+
     # validate movetype is received, and with proper value
     if type(movetype) is not str:
         return log.getMsg('ERR_MOVE_INVALIDTYPE', 'movetype is not str')
@@ -112,9 +115,14 @@ def moveTrack(trackname, mm, movetype):
         if movetype != 'MOVE' and movetype != 'ABSOLUTE':
             return log.getMsg('ERR_MOVE_INVALIDTYPE', 'movetype is not move or absolute')
 
-    trackdata= hardware.getTrackValues()[track_id]
+    trackdata= hardware.getTrackValues()[trackname]
+    bufferlength = 10
+    lengthlimit = paras.tracksetting[trackname]['length'] - bufferlength
     if type(mm) is str:
-        mm = float(mm)
+        if mm.isnumeric():
+            mm = float(mm)
+        else:
+            return log.getMsg("ERR_TRACK_WRONG_DATA_TYPE","'mm' is require numeric value within 0-"+str(lengthlimit))
 
     if movetype == 'MOVE':
         newmm = trackdata['mm'] + mm
@@ -125,21 +133,45 @@ def moveTrack(trackname, mm, movetype):
         exismm = trackdata['mm']
         mm = newmm - exismm
 
-    bufferlength = 10
-    lengthlimit = paras.tracksetting[track_id]['length'] - bufferlength
+
     newmmstr = str(newmm)
     if newmm < 0 or newmm > lengthlimit:
         return log.getMsg('ERR_MOVETRACK_OVERLIMIT', "Track " + trackname + " blocked cause you wish to move " + str(mm) + " mm, to "+newmmstr+". It hit limit 0 - " + str(lengthlimit))
     else:
-        result = hardware.moveTrack(0, mm)
+        result = hardware.moveTrack(trackname, mm)
         return log.getMsg(result, "Track "+trackname+" moved "+str(mm)+" mm, to "+newmmstr + ',  limit 0 - ' + str(lengthlimit))
 
 
 # define servoname and how much degree to go
-def changeServoValue(servoname,degree):
-    global hardware
-    hardware.setServo(servoname,degree)
-    return log.getMsg("OK","")
+def changeServoValue(servoname,value):
+    degree = 0
+    #validate servo exists
+    if(checkKey(paras.servosetting,servoname) == False):
+        return log.getMsg('ERR_SERVO_INVALIDSERVO',servoname+' does not exists')
+
+    #if given value is position name, get position degree from servosetting, or direct use integer value
+    valuestr=''
+    if type(value) is int or type(value) is float:
+        degree = value
+        valuestr = str(valuestr)
+    elif type(value) is str and value != '':
+        # doublecheck, maybe value is number but data type is string
+        if value.strip('-').isnumeric():
+            degree = float(value)
+        else:
+            degree = paras.servosetting[servoname][value]
+        valuestr = value
+    else:
+        return log.getMsg('ERR_SERVO_INVALIDVALUE','invalid value')
+
+
+    result = hardware.setServo(servoname,degree)
+    if result == "OK":
+        return log.getMsg(result,"")
+    else:
+        maxdeg = paras.servosetting[servoname]['maxdeg']
+        mindeg = paras.servosetting[servoname]['mindeg']
+        return log.getMsg(result,"assigned invalid value '"+valuestr+"' to servo '"+servoname+"', please check is it within "+str(mindeg)+"/"+str(maxdeg)+".")
 
 
 # run calibration task, either calibrate all=all joint, or single joint (J1,J2...)
@@ -178,13 +210,10 @@ def moveRestPosition(joints):
 
 def updateJointValue():
     encodervalue = hardware.refreshStepperMotorEncoderValue()
+    return encodervalue
     # result: b'00 000000 A7995 B2321 C9 D7594 E2277 F3308\r\n'
     #  01 100000 A7996 B2321 C9 D7594 E2277 F3308
 
-# convert step no to human readable degree
-def convertStepNoToDegree(stepno):
-    global calc
-    return calc.getDegreeFromStep()
 
 def left(s, amount):
     return s[:amount]
@@ -196,6 +225,11 @@ def mid(s, offset, amount):
     return s[offset:offset+amount]
 
 
+def checkKey(arr, key):
+    if key in arr.keys():
+        return True
+    else:
+        return False
 
 
 try:

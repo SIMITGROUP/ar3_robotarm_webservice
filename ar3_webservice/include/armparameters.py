@@ -9,7 +9,19 @@ jsetting = {
     5:{"maxdeg":148.1, "mindeg":-148.1, "steplimit":6320, "degperstep": 0, "caldir":1, "restpos":0, "reststep": 3160 },
 }
 
-tracksetting = {0:{"length":850,"steplimit":65650}}
+tracksetting = {
+    't1': {"length":850,"steplimit":65650 }
+}
+
+servosetting = {
+    'gripper1': { 'maxdeg':165, 'mindeg':90, 'positions': {'open':90,'close':165} }
+}
+
 jointqty = 6
 teensybaudrate=115200
 arduinobaudrate=115200
+Speed = 25 # value in %, shall fetch from runtime variables
+ACCdur =15 # accelerartion duration
+ACCspd = 10 # accelerartion speed %
+DECdur = 20 # deceleration duration
+DECspd = 5 # deceleration duration %

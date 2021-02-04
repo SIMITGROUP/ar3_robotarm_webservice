@@ -1418,6 +1418,7 @@ def J1jogNeg():
     savePosData()
     CalcFwdKin()
     command = "MJA"+J1motdir+str(J1jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"U"+str(J1StepCur)+"V"+str(J2StepCur)+"W"+str(J3StepCur)+"X"+str(J4StepCur)+"Y"+str(J5StepCur)+"Z"+str(J6StepCur)+"\n"
+    print(command)
     ser.write(command.encode())    
     ser.flushInput()
     time.sleep(.2)
@@ -1474,6 +1475,7 @@ def J1jogPos():
     savePosData()
     CalcFwdKin()
     command = "MJA"+J1drivedir+str(J1jogSteps)+"S"+Speed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"U"+str(J1StepCur)+"V"+str(J2StepCur)+"W"+str(J3StepCur)+"X"+str(J4StepCur)+"Y"+str(J5StepCur)+"Z"+str(J6StepCur)+"\n"
+    print(command)
     ser.write(command.encode())    
     ser.flushInput()
     time.sleep(.2)
