@@ -8,7 +8,14 @@ import json
 
 
 
-app = Flask(__name__)
+app = Flask(__name__,template_folder = "views")
+
+
+@app.route("/trygamepad")
+def runTryGamePad():
+    return render_template("gamepad.html")
+
+
 # app.config.from_object(Config())
 # scheduler = APScheduler()
 # scheduler.init_app(app)
@@ -98,20 +105,19 @@ def runSetPosition():
     return f.setPosition(parameters)
 
 
-@app.route("/trygamepad")
-def runTryGamePad():
-    return render_template("./views/gamepad.html")
 
 ## some override setting at below, just ignore it don't change ##
 @app.before_request
 def before_show():
+    # return "OK"
+    a=1
     armstatus = f.checkARMConnectionReady()
     if armstatus == "OK":
         result = f.updateJointValue()
-        # return result
+        return result
     else:
         return armstatus
-
+#
 
 @app.after_request
 def apply_header(response):
