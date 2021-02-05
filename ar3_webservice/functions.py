@@ -280,10 +280,10 @@ def checkKey(arr, key):
 
 
 try:
-   # initSystemVariables()
+    initSystemVariables()
     print("after init system variables")
-    #hardware = Hardware(v, paras)
-    #print("hardware type=",type(hardware))
+    hardware = Hardware(v, paras)
+    print("hardware type=",type(hardware))
     print("Try connecting and try")
     print("Arm connected")
 except Exception as e:
