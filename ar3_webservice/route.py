@@ -100,7 +100,7 @@ def runSetPosition():
 
 @app.route("/trygamepad")
 def runTryGamePad():
-    return render_template("views/gamepad.html")
+    return render_template("./views/gamepad.html")
 
 ## some override setting at below, just ignore it don't change ##
 @app.before_request
