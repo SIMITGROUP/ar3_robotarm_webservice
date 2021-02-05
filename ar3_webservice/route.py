@@ -1,4 +1,4 @@
-from flask import Flask,request
+from flask import Flask,request,render_template
 import functions as f
 import json
 
@@ -98,6 +98,9 @@ def runSetPosition():
     return f.setPosition(parameters)
 
 
+@app.route("/trygamepad")
+def runTryGamePad():
+    return render_template("views/gamepad.html")
 
 ## some override setting at below, just ignore it don't change ##
 @app.before_request
