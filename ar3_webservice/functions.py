@@ -283,7 +283,7 @@ try:
     initSystemVariables()
     print("after init system variables")
     hardware = Hardware(v, paras)
-    print("hardware type=",type(hardware))
+    # print("hardware type=",type(hardware))
     print("Try connecting and try")
     print("Arm connected")
 except Exception as e:
