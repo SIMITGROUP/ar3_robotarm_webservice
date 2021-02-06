@@ -370,10 +370,7 @@ class Hardware:
             return log.getMsg('ERR_SERVO_INVALIDSERVO', servoname + ' does not exists')
 
 
-        if type(degree) is int:
-            degree = str(degree)
-        print("servoname:")
-        print(servoname)
+
 
         #identify which servo no, cause AR3 put firmware into arduino, recognise as 0,1,2,3
         servonumber=9999
@@ -390,8 +387,8 @@ class Hardware:
             return 'ERR_SERVO_MAX'
         elif degree < mindeg :
             return 'ERR_SERVO_MIN'
-
-        command = "SV"+str(servonumber)+"P"+str(int(degree))
+        degreestr = str(degree)
+        command = "SV"+str(servonumber)+"P"+degreestr
         board = self.ser_arduino # most of the case, using arduino, this place reserved for future enhancement which add servo into more board
         result =  self.writeIO(board,command)
         self.servovalue[servoname] = degree
