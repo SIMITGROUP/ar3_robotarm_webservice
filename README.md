@@ -1,5 +1,6 @@
 This is web services design for open source robot arm (https://www.anninrobotics.com/) project name AR3.
-## this web service work reasonable well in my environment, not mean work in your environment, you has been warn and test it with care!! 
+
+## this web service work reasonable well in my environment, include back end and front end. However, it not mean work in your environment, you has been warn and test it with care!! 
 
 
 AR3 is cool robot arm project, however it is written as python desktop application, to increase mobility and flexibility I build this web service. It allow all developer develop all kind of front end application included web/desktop/mobile app to integrate with this web service. Beside, it also possible to allow single front end application control multiple instance of web services.
@@ -57,6 +58,13 @@ curl http://127.0.0.1:5000//move_j/j1?degree=10&movetype=move
 ```
 
 4. You can try another 2 script: 02_calibratealljoint.sh, 03_runmanycommand.sh too, or use any web browser run above url to see your arm move as expect?
+5. If you run within Raspberry PI, run `python3 camera.py` to allow remote computer monitor your camera remotely (via http port 8000)
+# Try game controller front end (If you have USB xbox controller):
+1. Put `simplefrontend/gamepad` into any of your web server root folder
+2. use google chrome browse to `http://xxxxx/gamepad`
+3. Change AR3 Web Service URL if you not use localhost
+4. If you use Raspberry PI and have camera module, change AR3 Webcam URL (You shall execute `ar3_robotarm_webservice/ar3_webservice/camera.py`)
+5. You can start play it
 
 # Project Status
 Refer project plan
