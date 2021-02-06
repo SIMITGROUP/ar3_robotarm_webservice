@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+        <script src="function.js"></script>
+ 
+    </head>
+    <body>
+    
+    <!-- top status bar -->
+    <div class="row">
+        <div class="col">
+            <div>
+                <label class="form-label">AR3 Host</label>
+                <div id="holdindicator" class="spinner-border holdinicator" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <input type="text" name="webservicehost" id="webservicehost" class="form-control" value="http://192.168.68.119:5000"/>
+                <label class="form-label">Value Multiplier</label>
+                <input type="text" name="multiplyer" id="multiplyer" class="form-control" value="10"/>
+            </div>
+        </div>
+    </div>
+    <!-- 3 columns -->
+    <div class="container">
+        <div class="row">
+            <div id="imgframe" class="col">
+                <div class="card">
+                    <div class="card-body"> 
+                        <img id="webserviceimage" src="ss"/>
+                    </div>
+                </div>
+            </div>
+            <div id="gamepadframe" class="col">
+                <div class="card">
+                    <div class="card-body"> 
+                        <img id="gamepadimage" src="ss"/>
+                    </div>
+                </div>
+            </div>
+            <div id="programframe" class="col">
+                <div class="card">
+                    <div> <div class="card-body">
+                      <label class="form-label">Program List</label>
+                        <select size=20 id="selProgramList"  name="selProgramList"  class="form-control">
+                          <option>J1=20,J2=30,J3=-40,J4=10,J5=20,J6=70,gripper1=20,t1=20</option>
+                          <option>J1=20,J2=30,J3=-40,J4=10,J5=20,J6=70,gripper1=20,t1=60</option>
+                        </select>
+                      </div>
+                  </div>
+                </div>
+            </div>
+            <div>
+                <div class="card">
+                    <div class="card-body"> 
+                      <div id="gamepadstatus">Game Pad Status</div>
+                      <div id="gamepadPrompt"></div>
+                      <div id="gamepadDisplay"></div>   
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- bottom bar -->
+    <div class="card">
+        <div class="card-body"> 
+            <select><option>Program 1</option><option>Add New</option></select>
+            <button>Start Program</button>
+            <button>Stop Program</button>
+            <button>Save Program</button>
+            <button>Refresh and Clear Changes</button>
+            <button>Delete Program</button>        
+        </div>
+    </div>
+    <script>
+    //a = add url record
+    //b = delete url
+    //up/down/left/right = keyboard updownleftright
+    //left axis =j1j2
+    //right axis = j2/j3
+    //
+    var hasGP = false;
+    var repGP;
+    var labels = ['a','b','x','y','l','r','l2','r2','back','start','left axis press','right axis press','up','down','left','right','xbox']
+    var axislabels = ['left x','left y','right x','right y']
+    var prevdata_buttons=[]
+    var prevdata_axis = []
+
+    function canGame() {
+        return "getGamepads" in navigator;
+    }
+ 
+    function reportOnGamepad() {
+        var gp = navigator.getGamepads()[0];
+        var html = "";
+            html += "id: "+gp.id+"<br/>";
+ 
+        for(var i=0;i<gp.buttons.length;i++) {
+            html+= "Button "+(i+1)+" ("+labels[i]+"): ";
+            if(gp.buttons[i].pressed)
+            {
+                html+= " pressed";
+                addCommand(i,gp.buttons[i],'button');
+            }
+            html+= "<br/>";
+        }
+ 
+        for(var i=0;i<gp.axes.length; i++) {
+           var data1 = parseInt(gp.axes[i]);
+            html+= axislabels[i]+" Stick "+ ": "+data1+"<br/>";
+            if(data1==1 || data1==-1 )
+            {
+                addCommand(i,data1,'axis');
+            }
+        }
+ 
+        $("#gamepadDisplay").html(html);
+    }
+ 
+    $(document).ready(function() {
+        releasehold()
+        if(canGame()) {
+ 
+            var prompt = "To begin using your gamepad, connect it and press any button!";
+            $("#gamepadPrompt").text(prompt);
+ 
+            $(window).on("gamepadconnected", function() {
+                hasGP = true;
+                $("#gamepadPrompt").html("Gamepad connected!");
+                console.log("connection event");
+                repGP = window.setInterval(reportOnGamepad,50);
+            });
+ 
+            $(window).on("gamepaddisconnected", function() {
+                console.log("disconnection event");
+                $("#gamepadPrompt").text(prompt);
+                window.clearInterval(repGP);
+            });
+ 
+            //setup an interval for Chrome
+            var checkGP = window.setInterval(function() {
+                console.log('checkGP');
+                if(navigator.getGamepads()[0]) {
+                    if(!hasGP) $(window).trigger("gamepadconnected");
+                    window.clearInterval(checkGP);
+                }
+            }, 500);
+        }
+ 
+    });
+    </script>
+
+    </body>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+
+</html>
+
+
