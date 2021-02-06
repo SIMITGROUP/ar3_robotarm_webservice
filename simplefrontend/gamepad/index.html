@@ -40,7 +40,9 @@
             <div id="gamepadframe" class="col">
                 <div class="card">
                     <div class="card-body"> 
-                        <img id="gamepadimage" src="ss"/>
+                        <div id="gamepadstatus">Game Pad Status</div>
+                          <div id="gamepadPrompt"></div>
+                          <div id="gamepadDisplay"></div>
                     </div>
                 </div>
             </div>
@@ -53,15 +55,6 @@
                           <option>J1=20,J2=30,J3=-40,J4=10,J5=20,J6=70,gripper1=20,t1=60</option>
                         </select>
                       </div>
-                  </div>
-                </div>
-            </div>
-            <div>
-                <div class="card">
-                    <div class="card-body"> 
-                      <div id="gamepadstatus">Game Pad Status</div>
-                      <div id="gamepadPrompt"></div>
-                      <div id="gamepadDisplay"></div>   
                   </div>
                 </div>
             </div>
@@ -87,8 +80,8 @@
     //
     var hasGP = false;
     var repGP;
-    var labels = ['a','b','x','y','l','r','l2','r2','back','start','left axis press','right axis press','up','down','left','right','xbox']
-    var axislabels = ['left x','left y','right x','right y']
+    var labels = ['a','b','x','y','l/--','r/++','l2/t1','r2/t1','back','start','left axis press/servo1 open','right axis press/servo1 close','up/j5','down/j5','left/j6','right/j6','xbox']
+    var axislabels = ['left x/j1','left y/j2','right x/j4','right y/j3']
     var prevdata_buttons=[]
     var prevdata_axis = []
 
