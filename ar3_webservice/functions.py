@@ -122,7 +122,8 @@ def moveTrack(trackname, mm, movetype):
     bufferlength = 10
     lengthlimit = paras.tracksetting[trackname]['length'] - bufferlength
     if type(mm) is str:
-        if mm.isnumeric():
+
+        if mm.strip('-').isnumeric():
             mm = float(mm)
         else:
             return log.getMsg("ERR_TRACK_WRONG_DATA_TYPE","'mm' is require numeric value within 0-"+str(lengthlimit))
