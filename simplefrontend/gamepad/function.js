@@ -118,11 +118,11 @@ function addCommand(i,value,type)
 					myvalue=""
 					if(i==10)
 					{
-						myvalue="close"
+						myvalue="open"
 					}
 					else
 					{
-						myvalue="open"	
+						myvalue="close"
 					}
 					url += '/servo/'+servoname
 					data = {						

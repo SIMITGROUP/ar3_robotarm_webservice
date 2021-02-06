@@ -538,7 +538,7 @@ class Hardware:
         TrackLength = self.tracksetting[trackname]['length']
         newmm = self.trackvalue[trackname]["mm"] + mm
 
-        if newmm > TrackLength:
+        if newmm > TrackLength or newmm <0:
             return "ERR_MOVETRACK_OVERLIMIT"
         absmm = abs(mm)
         TrackSteps = str(int((TrackStepLim / TrackLength) * absmm))
@@ -555,7 +555,7 @@ class Hardware:
         result = self.writeIO(board, command)
         result2 = self.setTrackValue(trackname,newmm)
 
-        return result
+        return "OK"
 
 
     def checkKey(self,arr, key):
