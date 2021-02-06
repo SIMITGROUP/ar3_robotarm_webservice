@@ -35,9 +35,17 @@ function releasehold()
 
 	$('.holdinicator').hide();
 }
+
+function connectCamera()
+{
+    let webcamurl = $('#webcamurl').val();
+    $('#ar3cameraimage').attr('src',webcamurl);
+
+}
 function addCommand(i,value,type)
 {
 	//previous ajax not finish, not accept any command
+
 	if(!isajax)
 	{
 			multiplyer = parseInt($('#multiplyer').val())
@@ -47,7 +55,8 @@ function addCommand(i,value,type)
 			data={};
 			$('.holdinicator').show();
 			data=[];
-			degree = 0 
+			degree = 0;
+			showinfo=false;
 			if(type == 'axis' || (type=='button' && i >=12 && i <=15) ) //2 joystick + up/down/left/right to control 6 axis
 			{
 				let jointname ='';
@@ -113,10 +122,10 @@ function addCommand(i,value,type)
 						mm: mm
 					}
 				}
-				else if (i >=10 && i <=11)
+				else if (i >=2 && i <=3)
 				{
 					myvalue=""
-					if(i==10)
+					if(i==2)
 					{
 						myvalue="open"
 					}
@@ -152,6 +161,28 @@ function addCommand(i,value,type)
 					url=''
 					$('#multiplyer').val(multiplyer);
 				}
+				else if(i==1)
+				{
+				    url+='/getposition'
+				}
+				else if(i==8)
+				{
+				    url += '/calibrate/setrest';
+				}
+				else if(i==9)
+				{
+				    url += '/calibrate/all';
+				}
+				else if(i==0)
+				{
+				    url += '/info';
+				    console.log('showinfo')
+				    showinfo=true;
+				}
+				else if(i==16)
+				{
+                    url += '/movetorestposition';
+				}
 				else
 				{
 				    url='';
@@ -169,7 +200,21 @@ function addCommand(i,value,type)
 					releasehold();
 					$('#statuscode').val(r.code);
 					$('#statusmsg').val(r.msg);
-					isajax=false
+					isajax=false;
+
+                       console.log(showinfo)
+					if(showinfo) //if show info, just draw and finish
+					{
+					    displayArmInformation(r);
+					}
+					else  //there is movement, will force download latest info
+					{
+					    if(r['code']=='OK')
+					    {
+					        addCommand(0,1,'button');
+					    }
+
+					}
 					
 				}).fail(function(e){
 					console.error(e)
@@ -187,5 +232,42 @@ function addCommand(i,value,type)
 
 	}
 	
+
+}
+
+
+function displayArmInformation(data)
+{
+    try{
+
+        var board = data['board'];
+        var jointvalues = data['jointvalues'];
+        var servovalues = data['servovalues'];
+        var trackvalues = data['trackvalues'];
+        var txt = '';
+        jointtxt='';
+        $.each(jointvalues,function(index,v){
+            jointtxt+='    J'+(index+1) + ': '+v['degree']+' ('+v['step']+")\n"
+        });
+
+        servotxt='';
+        $.each(servovalues,function(index,v){
+            servotxt+='    '+ index + ': '+v+"\n"
+        });
+
+        tracktxt='';
+        $.each(trackvalues,function(index,v){
+            tracktxt+='    '+ index + ': '+v['mm']+' ('+v['step']+")\n"
+        });
+        console.log(jointtxt);
+        txt="Board: "+board+"\n"+
+            "Joints:\n"+ jointtxt +"\n"+
+            "Servo:\n"+ servotxt +"\n"+
+            "Travel Track:\n"+ tracktxt +"\n";
+        $('#txtArmInfo').val(txt);
+    }
+    catch(e){
+        consoloe.err(e)
+    }
 
 }

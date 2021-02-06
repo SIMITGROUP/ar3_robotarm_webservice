@@ -236,7 +236,7 @@ def getAllPosition():
 
     for k, v in trackvalues.items():
         txt = txt+ k+'='+ str(v['mm']) +'&'
-    return txt
+    return log.getMsg('OK',txt);
 
 def setPosition(allpara):
     # sample url =  /setposition?J1=19.71&J2=-90.22&J3=1.89&J4=-0.07&J5=-0.23&J6=-0.47&gripper1=0&t1=0&
