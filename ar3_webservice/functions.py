@@ -199,7 +199,7 @@ def runCalibration(jname):
     else:
         return log.getMsg("ERR_CALIBRATE_FAILED01", "Invalid calibration joint name "+jointname)
     # all success result return here
-    return '{"code":"OK","msg":""}' #log.getMsg("OK", "");
+    return  log.getMsg("OK", "");
 
 # move arm's joints to rest positions
 def moveRestPosition(joints):

@@ -101,11 +101,11 @@ function addCommand(i,value,type)
 					mm=0;
 					if(i==6)
 					{
-						mm=multiplyer*1
+						mm=multiplyer* -1
 					}
 					else
 					{
-						mm=multiplyer*-1
+						mm=multiplyer*1
 					}
 					url += '/movetrack/'+trackname
 					data = {
