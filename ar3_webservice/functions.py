@@ -164,6 +164,9 @@ def changeServoValue(servoname,value):
         else:
             degree = paras.servosetting[servoname]['positions'][value]
         valuestr = value
+
+        print("degree")
+        print(degree)
     else:
         return log.getMsg('ERR_SERVO_INVALIDVALUE','invalid value')
 
