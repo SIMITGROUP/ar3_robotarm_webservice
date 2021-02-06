@@ -48,6 +48,8 @@ function addCommand(i,value,type)
 
 	if(!isajax)
 	{
+	        $('#setpositionurl').val('');
+	        getpositionstring = false;
 			multiplyer = parseInt($('#multiplyer').val())
 			webservicehost = $('#webservicehost').val();
 			url=webservicehost	
@@ -163,7 +165,8 @@ function addCommand(i,value,type)
 				}
 				else if(i==1)
 				{
-				    url+='/getposition'
+				    url+='/getposition';
+				    getpositionstring=true;
 				}
 				else if(i==8)
 				{
@@ -206,6 +209,10 @@ function addCommand(i,value,type)
 					if(showinfo) //if show info, just draw and finish
 					{
 					    displayArmInformation(r);
+					}
+					if(getpositionstring)
+					{
+					    $('#setpositionurl').val(r['msg']);
 					}
 					else  //there is movement, will force download latest info
 					{

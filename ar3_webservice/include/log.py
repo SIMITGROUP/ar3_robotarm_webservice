@@ -33,6 +33,8 @@ def getMsg(code,moremsg):
         msg=""
         if code in errorcodes.keys():
             if moremsg == "":
+                msg = errorcodes[code]
+            elif  errorcodes[code] == "":
                 msg = moremsg
             else:
                 msg = errorcodes[code]+', '+moremsg
