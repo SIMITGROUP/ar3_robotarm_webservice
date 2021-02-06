@@ -6,16 +6,7 @@ import json
 # class Config(object):
 #     SCHEDULER_API_ENABLED = True
 
-
-
 app = Flask(__name__,template_folder = "views")
-
-
-@app.route("/trygamepad")
-def runTryGamePad():
-    return render_template("gamepad.html")
-
-
 # app.config.from_object(Config())
 # scheduler = APScheduler()
 # scheduler.init_app(app)
@@ -29,7 +20,7 @@ def runTryGamePad():
 
 @app.route('/')
 def index():
-    return f.index()
+    return json.dumps(f.index())
 
 @app.route('/help')
 def help():
@@ -37,7 +28,7 @@ def help():
 
 @app.route('/info')
 def info():
-    return f.info()
+    return json.dumps(f.info())
 
 @app.route('/servo')
 def servolist():
@@ -48,7 +39,7 @@ def servolist():
 def moveServo(servo):
     global f
     value =request.args.get("value")
-    return f.changeServoValue(servo,value)
+    return json.dumps(f.changeServoValue(servo,value))
 
 @app.route('/move_j')
 def joiintlist():
@@ -59,7 +50,7 @@ def moveJoint(jointname):
     global f
     degree =request.args.get("degree")
     movetype = request.args.get("movetype")
-    return f.rotateJoint(jointname,degree,movetype)
+    return json.dumps(f.rotateJoint(jointname,degree,movetype))
 
 @app.route('/movetrack')
 def tracklist():
@@ -70,7 +61,7 @@ def moveTrack(trackname):
     global f
     mm = request.args.get("mm")
     movetype = request.args.get("movetype")
-    return f.moveTrack(trackname,mm,movetype)
+    return json.dumps(f.moveTrack(trackname,mm,movetype))
 
 
 
@@ -80,7 +71,7 @@ def calibratelist():
 
 @app.route('/calibrate/<jointname>')
 def calibrateAction(jointname):
-    return f.runCalibration(jointname)
+    return json.dumps(f.runCalibration(jointname))
 
 @app.route('/calibratetrack')
 def displayCalibrateTrack():
@@ -88,21 +79,21 @@ def displayCalibrateTrack():
 
 @app.route('/calibratetrack/<trackname>')
 def calibrateTrack(trackname):
-    return f.calibrateTrack(trackname)
+    return json.dumps(f.calibrateTrack(trackname))
 
 
 @app.route('/movetorestposition')
 def moveToRest():
-    return f.moveRestPosition([1,1,1,1,1,1])
+    return json.dumps(f.moveRestPosition([1,1,1,1,1,1]))
 
 @app.route('/getposition')
 def runGetPosition():
-    return f.getAllPosition()
+    return json.dumps(f.getAllPosition())
 
 @app.route('/setposition')
 def runSetPosition():
     parameters = request.args
-    return f.setPosition(parameters)
+    return json.dumps(f.setPosition(parameters))
 
 
 

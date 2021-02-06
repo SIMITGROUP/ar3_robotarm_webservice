@@ -25,7 +25,7 @@ def index():
 def info():
 
     result = hardware.checkMachineStatus()
-    return json.dumps(result)
+    return result
 
 def checkARMConnectionReady():
     print("checkARMConnectionReady")
