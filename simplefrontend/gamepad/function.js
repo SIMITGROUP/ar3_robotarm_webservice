@@ -213,6 +213,7 @@ function addCommand(i,value,type)
 					if(getpositionstring)
 					{
 					    $('#setpositionurl').val(r['msg']);
+					    $('#setpositionurl').select();
 					}
 					else  //there is movement, will force download latest info
 					{
