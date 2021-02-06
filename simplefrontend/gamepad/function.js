@@ -258,9 +258,9 @@ function displayArmInformation(data)
         var txt = '';
         jointtxt='';
         $.each(jointvalues,function(index,v){
-            index = parseInt(index)+1;
-
-            jointtxt+='    J'+ index + ': '+v['degree']+' ('+v['step']+")\n"
+            indexvalue = parseInt(index)+1;
+            console.log(index);
+            jointtxt+='    J'+ indexvalue + ': '+v['degree']+' ('+v['step']+")\n"
         });
 
         servotxt='';
