@@ -201,11 +201,8 @@ function addCommand(i,value,type)
 				jsonajax(url,data).done(function(r){
 					console.log(r)
 					releasehold();
-					$('#statuscode').val(r.code);
-					$('#statusmsg').val(r.msg);
 					isajax=false;
 
-                       console.log(showinfo)
 					if(showinfo) //if show info, just draw and finish
 					{
 					    displayArmInformation(r);
@@ -217,9 +214,15 @@ function addCommand(i,value,type)
 					}
 					else  //there is movement, will force download latest info
 					{
+
 					    if(r['code']=='OK')
 					    {
 					        addCommand(0,1,'button');
+					    }
+					    else
+					    {
+					        $('#statuscode').val(r.code);
+                            $('#statusmsg').val(r.msg);
 					    }
 
 					}
