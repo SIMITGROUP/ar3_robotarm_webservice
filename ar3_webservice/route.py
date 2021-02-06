@@ -114,7 +114,6 @@ def before_show():
     armstatus = f.checkARMConnectionReady()
     if armstatus == "OK":
         result = f.updateJointValue()
-        return "OK"
     else:
         return armstatus
 #
