@@ -152,6 +152,10 @@ function addCommand(i,value,type)
 					url=''
 					$('#multiplyer').val(multiplyer);
 				}
+				else
+				{
+				    url='';
+				}
 				
 
 			}
@@ -163,6 +167,8 @@ function addCommand(i,value,type)
 				jsonajax(url,data).done(function(r){
 					console.log(r)
 					releasehold();
+					$('#statuscode').val(r.code);
+					$('#statusmsg').val(r.msg);
 					isajax=false
 					
 				}).fail(function(e){

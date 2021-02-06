@@ -30,13 +30,7 @@
     <!-- 3 columns -->
     <div class="container">
         <div class="row">
-            <div id="imgframe" class="col">
-                <div class="card">
-                    <div class="card-body"> 
-                        <img id="webserviceimage" src="ss"/>
-                    </div>
-                </div>
-            </div>
+
             <div id="gamepadframe" class="col">
                 <div class="card">
                     <div class="card-body"> 
@@ -46,13 +40,23 @@
                     </div>
                 </div>
             </div>
+            <div id="replycontainer" class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <label class="form-label">Status Code</label>
+                        <input class="form-control" id="statuscode"/>
+                        <label class="form-label">Status Message</label>
+                        <textarea id="statusmsg" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
             <div id="programframe" class="col">
                 <div class="card">
                     <div> <div class="card-body">
-                      <label class="form-label">Program List</label>
+                        <label class="form-label">Program List<span class="text-danger">Not functioning yet</span></label>
                         <select size=20 id="selProgramList"  name="selProgramList"  class="form-control">
-                          <option>J1=20,J2=30,J3=-40,J4=10,J5=20,J6=70,gripper1=20,t1=20</option>
-                          <option>J1=20,J2=30,J3=-40,J4=10,J5=20,J6=70,gripper1=20,t1=60</option>
+                            <option>J1=20,J2=30,J3=-40,J4=10,J5=20,J6=70,gripper1=20,t1=20</option>
+                            <option>J1=20,J2=30,J3=-40,J4=10,J5=20,J6=70,gripper1=20,t1=60</option>
                         </select>
                       </div>
                   </div>
@@ -62,7 +66,8 @@
     </div>
     <!-- bottom bar -->
     <div class="card">
-        <div class="card-body"> 
+        <div class="card-body">
+            <div class="text-danger">Not yet functioning</div>
             <select><option>Program 1</option><option>Add New</option></select>
             <button>Start Program</button>
             <button>Stop Program</button>
@@ -80,7 +85,7 @@
     //
     var hasGP = false;
     var repGP;
-    var labels = ['a','b','x','y','l/--','r/++','l2/t1','r2/t1','back','start','left axis press/servo1 open','right axis press/servo1 close','up/j5','down/j5','left/j6','right/j6','xbox']
+    var labels = ['a:no use','b:no use','x:no use','y:no use','l/--','r/++','l2/t1','r2/t1','back:no use','start:no use','left axis press/servo1 open','right axis press/servo1 close','up/j5','down/j5','left/j6','right/j6','xbox:no use']
     var axislabels = ['left x/j1','left y/j2','right x/j4','right y/j3']
     var prevdata_buttons=[]
     var prevdata_axis = []
