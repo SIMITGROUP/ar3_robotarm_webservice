@@ -162,7 +162,7 @@ def changeServoValue(servoname,value):
         if value.strip('-').isnumeric():
             degree = float(value)
         else:
-            degree = paras.servosetting[servoname]['positions']'[value]
+            degree = paras.servosetting[servoname]['positions'][value]
         valuestr = value
     else:
         return log.getMsg('ERR_SERVO_INVALIDVALUE','invalid value')
