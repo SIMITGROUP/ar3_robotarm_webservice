@@ -3,7 +3,8 @@ releasehold();
 webservicehost='';
 trackname ='t1';
 servoname = 'gripper1'
-servovalues = {};
+var servovalues = {};
+var trackvalues = {};
 maxmultiplier = 100
 minmmultiplier = 1
 function jsonajax(url,data,method='get'){
@@ -130,6 +131,7 @@ function addCommand(i,value,type)
 				else if (i >=2 && i <=3)
 				{
 					myvalue=0
+					console.log(servovalues,servovalues[servoname]);
 					lastdegree = servovalues[servoname];
 
 					if(i==2)
@@ -258,9 +260,10 @@ function displayArmInformation(data)
 
         var board = data['board'];
         var jointvalues = data['jointvalues'];
-        var servovalues = data['servovalues'];
-        var trackvalues = data['trackvalues'];
+        servovalues = data['servovalues'];
+        trackvalues = data['trackvalues'];
         var txt = '';
+        console.log(servovalues);
         jointtxt='';
         $.each(jointvalues,function(index,v){
             indexvalue = parseInt(index)+1;
@@ -271,8 +274,8 @@ function displayArmInformation(data)
         servotxt='';
         $.each(servovalues,function(index,v){
             servotxt+='    '+ index + ': '+v+"\n"
-            servovalues[index]=v;
-            console.log(servovalues);
+//            servovalues[index]=v;
+
         });
 
         tracktxt='';

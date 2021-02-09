@@ -18,7 +18,7 @@ tracksetting = {
 }
 
 servosetting = {
-    'gripper1': { 'maxdeg':165, 'mindeg':90, 'positions': {'open':90,'close':160} }
+    'gripper1': { 'maxdeg':180, 'mindeg':0, 'positions': {'open':90,'close':160} }
 }
 
 jointqty = 6
