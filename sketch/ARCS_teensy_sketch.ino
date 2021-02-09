@@ -104,7 +104,7 @@ const int J3calPin = 28;
 const int J4calPin = 29;
 const int J5calPin = 30;
 const int J6calPin = 31;
-
+const int TRCalPin = 32; //kstan modified
 //set encoder multiplier
 const float J1encMult = 5.12;
 const float J2encMult = 5.12;
@@ -172,6 +172,7 @@ void loop() {
 
   //start loop
   WayPtDel = 0;
+
   while (Serial.available() > 0 or WayPtDel == 1)
   {
     char recieved = Serial.read();
@@ -180,6 +181,15 @@ void loop() {
     if (recieved == '\n')
     {
       String function = inData.substring(0, 2);
+
+      //kstan modified
+      int isJ1HitLimit = digitalRead(J1calPin);
+      int isJ2HitLimit = digitalRead(J2calPin);
+      int isJ3HitLimit = digitalRead(J3calPin);
+      int isJ4HitLimit = digitalRead(J4calPin);
+      int isJ5HitLimit = digitalRead(J5calPin);
+      int isJ6HitLimit = digitalRead(J6calPin);
+      int isTRHitLimit = digitalRead(TRCalPin);
 
 
       //-----COMMAND TO WAIT TIME---------------------------------------------------
@@ -986,11 +996,16 @@ void loop() {
         float DCCinc = (REGSpeed + DCCSpeed) / DCCStep;
         DCCSpeed = REGSpeed;
 
+        //kstan modified
+        int hitLimitSwitch=false;
+        if(isJ1HitLimit || isJ2HitLimit || isJ3HitLimit || isJ4HitLimit || isJ5HitLimit || isJ6HitLimit || isTRHitLimit)
+        {
+            hitLimitSwitch = true;
 
-
+        }
 
         ///// DRIVE MOTORS /////
-        while (J1cur < J1step || J2cur < J2step || J3cur < J3step || J4cur < J4step || J5cur < J5step || J6cur < J6step || TRcur < TRstep)
+        while ( hitLimitSwitch == false && (J1cur < J1step || J2cur < J2step || J3cur < J3step || J4cur < J4step || J5cur < J5step || J6cur < J6step || TRcur < TRstep)) //kstan modified
           //while (J1curStep < J1tarStep || J1curStep != J1tarStep)
         {
 
@@ -3491,7 +3506,19 @@ void loop() {
       /// END OF MOVE C ///
 
 
+      ///////////////////////////////////////////////////////////////////////////////////////////
+      //----- MOVE Travel Track To Limit ---------------------------------------------------
+      //-----------------------------------------------------------------------, make by kstan
+      ///////////////////////////////////////////////////////////////////////////////////////////
+      if(function == "LT")
+      {
+          //travel track go to limit switch, no need delay, use max speed
+          while (digitalRead(TRcalPin) == LOW )
+          {
+              digitalWrite(TRstepPin, LOW);
+          }
 
+      }
 
 
 
