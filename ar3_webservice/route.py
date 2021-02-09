@@ -52,9 +52,18 @@ def moveJoint(jointname):
     movetype = request.args.get("movetype")
     return json.dumps(f.rotateJoint(jointname,degree,movetype))
 
+
+@app.route('/move_l')
+def movelinear_info():
+    return '{"status":"ERR_MOVE_LINEAR","msg":"linear moved is not supported yet"}'
+
+@app.route('/move_l/<axis>')
+def movelinear_action():
+    return '{"status":"ERR_MOVE_LINEAR","msg":"linear moved is not supported yet"}'
+
 @app.route('/movetrack')
 def tracklist():
-    return '{"status":"OK","msg":"this will return list of command for movetrack"}'
+    return '{"status":"ERR_MOVE_LINEAR","msg":"this will return list of command for movetrack"}'
 
 @app.route('/movetrack/<trackname>')
 def moveTrack(trackname):

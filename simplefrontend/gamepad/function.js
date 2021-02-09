@@ -3,6 +3,7 @@ releasehold();
 webservicehost='';
 trackname ='t1';
 servoname = 'gripper1'
+servovalues = {};
 maxmultiplier = 100
 minmmultiplier = 1
 function jsonajax(url,data,method='get'){
@@ -45,8 +46,10 @@ function connectCamera()
 function addCommand(i,value,type)
 {
 	//previous ajax not finish, not accept any command
-
-	if(!isajax)
+    let isusegamepad = $('#usegamepad').prop('checked');
+    console.log("isusegamepad");
+    console.log(isusegamepad);
+	if(!isajax && isusegamepad)
 	{
 	        $('#setpositionurl').val('');
 	        getpositionstring = false;
@@ -126,14 +129,16 @@ function addCommand(i,value,type)
 				}
 				else if (i >=2 && i <=3)
 				{
-					myvalue=""
+					myvalue=0
+					lastdegree = servovalues[servoname];
+
 					if(i==2)
 					{
-						myvalue="open"
+						myvalue= lastdegree + multiplyer;
 					}
 					else
 					{
-						myvalue="close"
+						myvalue= lastdegree - multiplyer;
 					}
 					url += '/servo/'+servoname
 					data = {						
@@ -266,6 +271,8 @@ function displayArmInformation(data)
         servotxt='';
         $.each(servovalues,function(index,v){
             servotxt+='    '+ index + ': '+v+"\n"
+            servovalues[index]=v;
+            console.log(servovalues);
         });
 
         tracktxt='';
