@@ -41,7 +41,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div id="gamepadstatus">Game Pad Status</div>
-                              <div class="col"><label class="form-label"><input type="checkbox" id="usegamepad"> Use Joystick</label></div>
+                              <div class="col"><label class="form-label"><input type="checkbox" id="usegamepad" onchange="connectMachine()"> Use Joystick</label></div>
                               <div id="gamepadPrompt"></div>
                               <div id="gamepadDisplay"></div>
                         </div>
@@ -125,6 +125,7 @@
     $(document).ready(function() {
         releasehold()
         connectCamera();
+
         if(canGame()) {
  
             var prompt = "Connect joystick by press any button in controller!";

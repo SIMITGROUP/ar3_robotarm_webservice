@@ -44,12 +44,22 @@ function connectCamera()
     $('#ar3cameraimage').attr('src',webcamurl);
 
 }
+
+function connectMachine()
+{
+    let ischecked = $('#usegamepad').prop('checked')
+    if(ischecked)
+    {
+        addCommand(0,1,'button');
+    }
+
+}
+
 function addCommand(i,value,type)
 {
 	//previous ajax not finish, not accept any command
     let isusegamepad = $('#usegamepad').prop('checked');
-    console.log("isusegamepad");
-    console.log(isusegamepad);
+
 	if(!isajax && isusegamepad)
 	{
 	        $('#setpositionurl').val('');
@@ -131,16 +141,15 @@ function addCommand(i,value,type)
 				else if (i >=2 && i <=3)
 				{
 					myvalue=0
-					console.log(servovalues,servovalues[servoname]);
 					lastdegree = servovalues[servoname];
 
 					if(i==2)
 					{
-						myvalue= lastdegree + multiplyer;
+						myvalue= lastdegree - multiplyer;
 					}
 					else
 					{
-						myvalue= lastdegree - multiplyer;
+						myvalue= lastdegree + multiplyer;
 					}
 					url += '/servo/'+servoname
 					data = {						
@@ -186,7 +195,6 @@ function addCommand(i,value,type)
 				else if(i==0)
 				{
 				    url += '/info';
-				    console.log('showinfo')
 				    showinfo=true;
 				}
 				else if(i==16)
@@ -206,7 +214,7 @@ function addCommand(i,value,type)
 			if(url!='')
 			{
 				jsonajax(url,data).done(function(r){
-					console.log(r)
+
 					releasehold();
 					isajax=false;
 
@@ -263,11 +271,11 @@ function displayArmInformation(data)
         servovalues = data['servovalues'];
         trackvalues = data['trackvalues'];
         var txt = '';
-        console.log(servovalues);
+
         jointtxt='';
         $.each(jointvalues,function(index,v){
             indexvalue = parseInt(index)+1;
-            console.log(index);
+
             jointtxt+='    J'+ indexvalue + ': '+v['degree']+' ('+v['step']+")\n"
         });
 
@@ -282,7 +290,7 @@ function displayArmInformation(data)
         $.each(trackvalues,function(index,v){
             tracktxt+='    '+ index + ': '+v['mm']+' ('+v['step']+")\n"
         });
-        console.log(jointtxt);
+
         txt="Board: "+board+"\n"+
             "Joints:\n"+ jointtxt +"\n"+
             "Servo:\n"+ servotxt +"\n"+
