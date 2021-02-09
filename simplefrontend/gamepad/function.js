@@ -414,6 +414,8 @@ function displayArmInformation(data)
             "Servo:\n"+ servotxt +"\n"+
             "Travel Track:\n"+ tracktxt +"\n";
         $('#txtArmInfo').val(txt);
+        $('#statuscode').val('');
+        $('#statusmsg').val('');
     }
     catch(e){
         consoloe.err(e)
