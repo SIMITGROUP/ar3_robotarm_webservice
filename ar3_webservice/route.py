@@ -59,7 +59,8 @@ def movelinear_info():
 
 @app.route('/move_l/<axis>')
 def movelinear_action():
-    return '{"status":"ERR_MOVE_LINEAR","msg":"linear moved is not supported yet"}'
+    mm = request.args.get("mm")
+    return json.dumps(f.moveLinear(axis,mm))
 
 @app.route('/movetrack')
 def tracklist():

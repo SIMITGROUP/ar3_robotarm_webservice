@@ -50,10 +50,100 @@ function connectMachine()
     let ischecked = $('#usegamepad').prop('checked')
     if(ischecked)
     {
-        addCommand(0,1,'button');
+        fetchArmInfo();
     }
 
 }
+
+// use for move linear only. it separate from default movement to avoid confusion
+function useLinearMovement(i)
+{
+    console.log('useLinearMovement',i)
+    webservicehost = $('#webservicehost').val();
+    url=webservicehost + '/move_l/';
+    mm = parseInt($('#multiplyer').val());
+
+    if(i==6) //
+    {
+        url+='y';
+        mm = mm*-1;
+    }
+    else if(i==7) //
+    {
+        url+='y';
+    }
+    else if(i==12) //
+    {
+        url+='z';
+    }
+    else if(i==13) //
+    {
+        url+='z';
+        mm = mm *-1;
+    }
+    else if(i==14) //
+    {
+        url+='x';
+        mm = mm * -1;
+    }
+    else if(i==15) //
+    {
+        url+='x';
+    }
+    data = {mm:mm};
+    jsonajax(url,data).done(function(r){
+					releasehold();
+					isajax=false;
+
+					    if(r['code']=='OK')
+					    {
+					        fetchArmInfo();//   addCommand(0,1,'button');
+					    }
+					    else
+					    {
+					        $('#statuscode').val(r.code);
+                            $('#statusmsg').val(r.msg);
+					    }
+
+
+
+				}).fail(function(e){
+					console.error(e)
+					releasehold();
+					isajax=false
+				})
+
+}
+
+
+function checkIsLinearMovement(i)
+{
+    var avalue = gp.buttons[0]['pressed'];
+
+    if(avalue)
+    {
+        let dirbutton_index = [6,7,12,13,14,15];//l2,r2, up,down,left,right
+        if(dirbutton_index.includes(i))
+        {
+            console.log('checkIsLinearMovement:true');
+            return true;
+        }
+        else
+        {
+            console.log('checkIsLinearMovement:false');
+            return false;
+        }
+
+    }
+    else
+    {
+        console.log('checkIsLinearMovement:false');
+        return false;
+    }
+
+
+}
+
 
 function addCommand(i,value,type)
 {
@@ -63,6 +153,7 @@ function addCommand(i,value,type)
 	if(!isajax && isusegamepad)
 	{
 	        $('#setpositionurl').val('');
+	        islinearmovement =false;
 	        getpositionstring = false;
 			multiplyer = parseInt($('#multiplyer').val())
 			webservicehost = $('#webservicehost').val();
@@ -90,7 +181,12 @@ function addCommand(i,value,type)
 				}
 				else //button
 				{
-					if(i==12)//up
+				    if(checkIsLinearMovement(i)) //press a and hold, then go up/down/left/right shall run different linear routine
+				    {
+                        useLinearMovement(i);
+                        return false;
+				    }
+					else if(i==12)//up
 					{
 						jointname ='j5';
 						degree = multiplyer * -1;
@@ -111,18 +207,30 @@ function addCommand(i,value,type)
 						degree = multiplyer * -1;
 					}
 
+
+
 				}
-				
+
+
 				url += '/move_j/'+jointname
-				data = {
-					movetype:'move',
-					degree: degree
-				}
+                data = {
+                            movetype:'move',
+                            degree: degree
+                    }
+
 			}
 			else if (type == 'button')
 			{
 				if(i >=6 && i <=7)
 				{
+
+				    if(checkIsLinearMovement(i)) //press a and hold, then go up/down/left/right shall run different linear routine
+				    {
+				        useLinearMovement(i);
+				        return false;
+				    }
+
+
 					mm=0;
 					if(i==6)
 					{
@@ -192,10 +300,9 @@ function addCommand(i,value,type)
 				{
 				    url += '/calibrate/all';
 				}
-				else if(i==0)
+				else if(i==0) //it is modifier button for others button
 				{
-				    url += '/info';
-				    showinfo=true;
+                    url='';
 				}
 				else if(i==16)
 				{
@@ -218,10 +325,9 @@ function addCommand(i,value,type)
 					releasehold();
 					isajax=false;
 
-					if(showinfo) //if show info, just draw and finish
-					{
-					    displayArmInformation(r);
-					}
+
+
+
 					if(getpositionstring)
 					{
 					    $('#setpositionurl').val(r['msg']);
@@ -232,7 +338,7 @@ function addCommand(i,value,type)
 
 					    if(r['code']=='OK')
 					    {
-					        addCommand(0,1,'button');
+					        fetchArmInfo();//   addCommand(0,1,'button');
 					    }
 					    else
 					    {
@@ -257,10 +363,22 @@ function addCommand(i,value,type)
 			
 
 	}
-	
-
 }
 
+
+function fetchArmInfo()
+{
+    webservicehost = $('#webservicehost').val();
+	url=webservicehost+'/info'
+
+    jsonajax(url,'').done(function(r)
+    {
+        displayArmInformation(r);
+    }).fail(function(e)
+    {
+            console.error(e)
+    })
+}
 
 function displayArmInformation(data)
 {

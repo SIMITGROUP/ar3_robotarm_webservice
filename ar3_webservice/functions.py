@@ -221,6 +221,11 @@ def updateJointValue():
     #  01 100000 A7996 B2321 C9 D7594 E2277 F3308
 
 
+def moveLinear(axis,mm):
+    result = log.getMsg('ERR_MOVE_LINEAR',"Axis:"+axis+", mm="+str(mm))
+    return result;
+
+
 def getAllPosition():
     joinvalues = hardware.refreshStepperMotorEncoderValue()
     servovalues = hardware.getServoValues()

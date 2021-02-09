@@ -17,7 +17,8 @@ errorcodes ={
     "ERR_ROTATEJOINT_OVERMINIMIT": "One of the joint received rotation request which is lower then minimum degree limit",
     "ERR_SERIAL_DEVICENOTWRITABLE": "Serial device not writable, you need to restart web services to reconnect serial device",
     "ERR_MOVE_INVALIDTYPE": "Invalid movement type parameter, you shall submit 'move' or 'absolute' into parameter 'movetype' ",
-    "ERR_MOVETRACK_OVERLIMIT": "Track movement blocked due to movement over control limit"
+    "ERR_MOVETRACK_OVERLIMIT": "Track movement blocked due to movement over control limit",
+    "ERR_MOVE_LINEAR":"Linear movement is not supported at the moment",
 }
 # log 1=error/danger, 2 = warning, 3 = simple info, 4 = debug
 ERROR = 1
