@@ -419,6 +419,8 @@ class Hardware:
         else:
             return "OK"
 
+
+
     # get all stepper motor encoder value
     def refreshStepperMotorEncoderValue(self):
         log.info("enter refreshStepperMotorEncoderValue")
@@ -531,6 +533,21 @@ class Hardware:
         self.saveData()
         return "OK"
 
+    # move travel track to limit switch
+    def moveTravelTrackToLimitSwitch(self,trackname):
+        command ='LT'
+        board = self.ser_teensy  # most of the case, using teensy, this place reserved for future enhancement
+        result = self.writeIO(board, command)
+        result2 = self.setTrackValue(trackname, 0)
+
+
+
+    # move travel track to limit switch
+    def beep(self,isbeep):
+        command ='BP'+isbeep
+        board = self.ser_teensy  # most of the case, using teensy, this place reserved for future enhancement
+        result = self.writeIO(board, command)
+        return result
     # set track position value
     def setTrackValue(self,trackname,mm):
 

@@ -101,9 +101,29 @@ def rotateJoint(jname,degree,movetype):
     log.info("done rotateJoint")
     return jsondata
 
-def calibrateTrack(trackname):
-    result = hardware.setTrackValue(trackname,0)
-    return log.getMsg(result,"Assign Travel Track Position to 0mm")
+
+def runBeep(onoff):
+    isbeep = 0
+    if onoff == "on" or onoff == "ON":
+        isbeep = 1
+        return log.getMessage(hardware.beep(isbeep) + " run beep "+onoff)
+
+def calibrateTrack(trackname,limitswitch):
+    islimitswitch=0
+    if type(limitswitch) is str and limitswitch.isnumeric():
+        islimitswitch = int(limitswitch)
+    elif type(limitswitch) is int:
+        islimitswitch= limitswitch
+
+
+
+
+    if islimitswitch == 0: # no limit switch, use current position as 0
+        result = hardware.setTrackValue(trackname,0)
+    else:
+        result = hardware.moveTravelTrackToLimitSwitch(trackname)
+
+    return log.getMsg(result,"Put Travel Track to 0mm")
 
 def moveTrack(trackname, mm, movetype):
     #at the moment, any trackname also convert to track1

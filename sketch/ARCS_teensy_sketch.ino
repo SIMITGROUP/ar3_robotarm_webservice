@@ -104,7 +104,9 @@ const int J3calPin = 28;
 const int J4calPin = 29;
 const int J5calPin = 30;
 const int J6calPin = 31;
-const int TRCalPin = 32; //kstan modified
+ //kstan modified
+const int TRCalPin = 32;
+const int beep_pin = 35;
 //set encoder multiplier
 const float J1encMult = 5.12;
 const float J2encMult = 5.12;
@@ -3549,13 +3551,26 @@ void loop() {
       ///////////////////////////////////////////////////////////////////////////////////////////
       if(function == "LT")
       {
-          int TRcalPin=32;
+          int delaytr = 5;
           //travel track go to limit switch, no need delay, use max speed
+          int  TRcalPin =32;
           while (digitalRead(TRcalPin) == LOW )
           {
-              digitalWrite(TRstepPin, LOW);
-          }
+            digitalWrite(TRstepPin, HIGH);
+            delayMicroseconds(delaytr);
+            digitalWrite(TRstepPin, LOW);
+            delayMicroseconds(delaytr);
 
+          }
+          Serial.println("OK");
+
+      }
+
+
+      if(function == "BP")
+      {
+            beep(3);
+            Serial.println("OK");
       }
 
 
@@ -3634,5 +3649,21 @@ void reverseBack(int islimits[7],int movedirs[7])
 
   //after reverse, delay
   delayMicroseconds(delay);  
+}
 
+
+
+void beep(int quantity)
+{
+//   int frequency = 58593.75;
+  int frequency = 58593;
+
+  int delaytime = 300;
+  for(int i=0; i<quantity;i++)
+  {
+    tone(beep_pin, frequency);
+    delay(300);
+    tone(beep_pin, 0);
+    delay(300);
+  }  
 }

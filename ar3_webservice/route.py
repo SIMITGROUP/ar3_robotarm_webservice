@@ -89,7 +89,8 @@ def displayCalibrateTrack():
 
 @app.route('/calibratetrack/<trackname>')
 def calibrateTrack(trackname):
-    return json.dumps(f.calibrateTrack(trackname))
+    limitswitch = request.args.get("limitswitch")
+    return json.dumps(f.calibrateTrack(trackname,limitswitch))
 
 
 @app.route('/movetorestposition')
@@ -105,6 +106,14 @@ def runSetPosition():
     parameters = request.args
     return json.dumps(f.setPosition(parameters))
 
+
+@app.route('/beep')
+def beepInfo():
+    return '{"status":"OK","msg":"this will beep function command"}'
+
+@app.route('/beep/<onoff>')
+def runBeep(onoff):
+    return json.dumps(f.runBeep(onoff))
 
 
 ## some override setting at below, just ignore it don't change ##
