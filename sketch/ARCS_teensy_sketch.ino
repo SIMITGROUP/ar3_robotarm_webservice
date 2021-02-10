@@ -1,6 +1,6 @@
 /*  ARCS - Stepper motor robot control software Ver 1.0
     Copyright (c) 2019, Chris Annin
- 
+
     You are free to share, copy and redistribute in any medium
     or format.  You are free to remix, transform and build upon
     this material.
@@ -1004,6 +1004,14 @@ void loop() {
         int isJ6HitLimit = LOW;
         int isTRHitLimit = LOW;
 
+        int lastJ1HitLimit = LOW;
+        int lastJ2HitLimit = LOW;
+        int lastJ3HitLimit = LOW;
+        int lastJ4HitLimit = LOW;
+        int lastJ5HitLimit = LOW;
+        int lastJ6HitLimit = LOW;
+        int lastTRHitLimit = LOW;
+
         ///// DRIVE MOTORS /////
         while ((J1cur < J1step || J2cur < J2step || J3cur < J3step || J4cur < J4step || J5cur < J5step || J6cur < J6step || TRcur < TRstep)) //kstan modified
           //while (J1curStep < J1tarStep || J1curStep != J1tarStep)
@@ -1543,7 +1551,12 @@ void loop() {
             // Serial.print(isJ5HitLimit);
             // Serial.println(isJ6HitLimit);
 
-          if(isJ1HitLimit == HIGH || isJ2HitLimit == HIGH  || isJ3HitLimit == HIGH  || isJ4HitLimit== HIGH  || isJ5HitLimit == HIGH || isJ6HitLimit == HIGH)
+          if( isJ1HitLimit == HIGH && lastJ1HitLimit == HIGH || 
+              isJ2HitLimit == HIGH && lastJ2HitLimit == HIGH || 
+              isJ3HitLimit == HIGH && lastJ3HitLimit == HIGH || 
+              isJ4HitLimit == HIGH && lastJ4HitLimit == HIGH || 
+              isJ5HitLimit == HIGH && lastJ5HitLimit == HIGH || 
+              isJ6HitLimit == HIGH && lastJ6HitLimit == HIGH)
           {
             hitLimitSwitch = true;
             // Serial.println(" Hit!");  
@@ -1553,6 +1566,14 @@ void loop() {
             reverseBack(arr_hitlimit,arr_direction);
             break;
           }
+
+          lastJ1HitLimit = isJ1HitLimit;
+          lastJ2HitLimit = isJ2HitLimit;
+          lastJ3HitLimit = isJ3HitLimit;
+          lastJ4HitLimit = isJ4HitLimit;
+          lastJ5HitLimit = isJ5HitLimit;
+          lastJ6HitLimit = isJ6HitLimit;
+          lastTRHitLimit = isTRHitLimit;
 
         }//end while loop
 
