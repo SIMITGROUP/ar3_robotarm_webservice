@@ -25,7 +25,7 @@ ERROR = 1
 WARNING = 2
 INFO = 3
 DEBUG = 4
-showloglevel = WARNING
+showloglevel = DEBUG
 
 def getMsg(code,moremsg):
     # e standby for suitable environment use

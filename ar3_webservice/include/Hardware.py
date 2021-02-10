@@ -67,11 +67,22 @@ class Hardware:
         if self.teensyport == "":
             self.teensyport = self.autoDetectSerialPort('teensy')
 
+
         if self.arduinoport == "":
             self.arduinoport = self.autoDetectSerialPort('arduino')
 
         self.ser_teensy = self.connectSerial(self.teensyport, self.teensybaud)
+
+        if self.ser_teensy == False:
+            self.teensyport = self.autoDetectSerialPort('teensy')
+            self.ser_teensy = self.connectSerial(self.teensyport, self.teensybaud)
+
         self.ser_arduino = self.connectSerial(self.arduinoport, self.arduinobaud)
+
+        if self.ser_arduino == False:
+            self.ser_arduino = self.autoDetectSerialPort('arduino')
+            self.ser_arduino = self.connectSerial(self.arduinoport, self.arduinobaud)
+
         return "OK"
 
     def saveData(self):
@@ -115,7 +126,12 @@ class Hardware:
 
 
     def connectSerial(self,portname,baud):
-        return serial.Serial(portname, baud)
+        ser = None
+        try:
+            ser = serial.Serial(portname, baud)
+            return ser
+        except:
+            return False
 
     def checkAllBoard(self):
         if self.checkTeensy() == False:

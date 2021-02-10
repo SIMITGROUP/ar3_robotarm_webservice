@@ -157,6 +157,13 @@ void setup() {
   pinMode(J5calPin, INPUT_PULLUP);
   pinMode(J6calPin, INPUT_PULLUP);
 
+  // pinMode(J1calPin, INPUT);
+  // pinMode(J2calPin, INPUT);
+  // pinMode(J3calPin, INPUT);
+  // pinMode(J4calPin, INPUT);
+  // pinMode(J5calPin, INPUT);
+  // pinMode(J6calPin, INPUT);
+
   digitalWrite(TRstepPin, HIGH);
   digitalWrite(J1stepPin, HIGH);
   digitalWrite(J2stepPin, HIGH);
@@ -165,6 +172,7 @@ void setup() {
   digitalWrite(J5stepPin, HIGH);
   digitalWrite(J6stepPin, HIGH);
 
+  digitalWrite(LED_BUILTIN,LOW);
 }
 
 
@@ -180,17 +188,7 @@ void loop() {
     // Process message when new line character is recieved
     if (recieved == '\n')
     {
-      String function = inData.substring(0, 2);
-
-      //kstan modified
-      int isJ1HitLimit = digitalRead(J1calPin);
-      int isJ2HitLimit = digitalRead(J2calPin);
-      int isJ3HitLimit = digitalRead(J3calPin);
-      int isJ4HitLimit = digitalRead(J4calPin);
-      int isJ5HitLimit = digitalRead(J5calPin);
-      int isJ6HitLimit = digitalRead(J6calPin);
-      int isTRHitLimit = digitalRead(TRCalPin);
-
+      String function = inData.substring(0, 2);      
 
       //-----COMMAND TO WAIT TIME---------------------------------------------------
       //-----------------------------------------------------------------------
@@ -996,18 +994,19 @@ void loop() {
         float DCCinc = (REGSpeed + DCCSpeed) / DCCStep;
         DCCSpeed = REGSpeed;
 
-        //kstan modified
-        int hitLimitSwitch=false;
-        if(isJ1HitLimit || isJ2HitLimit || isJ3HitLimit || isJ4HitLimit || isJ5HitLimit || isJ6HitLimit || isTRHitLimit)
-        {
-            hitLimitSwitch = true;
-
-        }
+        int isJ1HitLimit = LOW;
+        int isJ2HitLimit = LOW;
+        int isJ3HitLimit = LOW;
+        int isJ4HitLimit = LOW;
+        int isJ5HitLimit = LOW;
+        int isJ6HitLimit = LOW;
+        int isTRHitLimit = LOW;
 
         ///// DRIVE MOTORS /////
-        while ( hitLimitSwitch == false && (J1cur < J1step || J2cur < J2step || J3cur < J3step || J4cur < J4step || J5cur < J5step || J6cur < J6step || TRcur < TRstep)) //kstan modified
+        while ((J1cur < J1step || J2cur < J2step || J3cur < J3step || J4cur < J4step || J5cur < J5step || J6cur < J6step || TRcur < TRstep)) //kstan modified
           //while (J1curStep < J1tarStep || J1curStep != J1tarStep)
         {
+          
 
           ////DELAY CALC/////
           if (highStepCur <= ACCStep)
@@ -1520,8 +1519,40 @@ void loop() {
           highStepCur = ++highStepCur;
           delayMicroseconds(200);
 
+          //kstan modified
+          //after movement check is it hit limit switch? If yes pull back abit and break loop
+          isJ1HitLimit = digitalRead(J1calPin);
+          isJ2HitLimit = digitalRead(J2calPin);
+          isJ3HitLimit = digitalRead(J3calPin);
+          isJ4HitLimit = digitalRead(J4calPin);
+          isJ5HitLimit = digitalRead(J5calPin);
+          isJ6HitLimit = digitalRead(J6calPin);
+          isTRHitLimit = digitalRead(TRCalPin);
 
-        }
+          int hitLimitSwitch=false;
+          
+
+          
+            // Serial.print("check is hit or not: ");
+            // Serial.print(isJ1HitLimit);
+            // Serial.print(isJ2HitLimit);
+            // Serial.print(isJ3HitLimit);
+            // Serial.print(isJ4HitLimit);
+            // Serial.print(isJ5HitLimit);
+            // Serial.println(isJ6HitLimit);
+
+          if(isJ1HitLimit == HIGH || isJ2HitLimit == HIGH  || isJ3HitLimit == HIGH  || isJ4HitLimit== HIGH  || isJ5HitLimit == HIGH || isJ6HitLimit == HIGH)
+          {
+            hitLimitSwitch = true;
+            // Serial.println(" Hit!");  
+            digitalWrite(LED_BUILTIN,HIGH);
+            int arr_hitlimit[] = {isJ1HitLimit , isJ2HitLimit, isJ3HitLimit, isJ4HitLimit, isJ5HitLimit, isJ6HitLimit, isTRHitLimit};
+            int arr_direction[] = {J1dir, J2dir, J3dir, J4dir, J5dir, J6dir, TRdir};
+            reverseBack(arr_hitlimit,arr_direction);
+            break;
+          }
+
+        }//end while loop
 
         ////////// check for stalled motor
         int ErrorTrue = 0;
@@ -1540,36 +1571,40 @@ void loop() {
         J5curStep = J5encPos.read() / J5encMult;
         J6curStep = J6encPos.read() / J6encMult;
 
-        if (abs(J1curStep - J1tarStep) >  J1encMult / EncDiv)
+
+        //modified to add J1 error msg
+        if (abs(J1curStep - J1tarStep) >  J1encMult / EncDiv  || isJ1HitLimit == HIGH)
         {
           J1error = "1";
           ErrorTrue = 1;
         }
-        if (abs(J2curStep - J2tarStep) >  J2encMult / EncDiv)
+        if (abs(J2curStep - J2tarStep) >  J2encMult / EncDiv  || isJ2HitLimit == HIGH)
         {
           J2error = "1";
           ErrorTrue = 1;
         }
-        if (abs(J3curStep - J3tarStep) >  J3encMult / EncDiv)
+        if (abs(J3curStep - J3tarStep) >  J3encMult / EncDiv  || isJ3HitLimit == HIGH)
         {
           J3error = "1";
           ErrorTrue = 1;
         }
-        if (abs(J4curStep - J4tarStep) >  J4encMult / EncDiv)
+        if (abs(J4curStep - J4tarStep) >  J4encMult / EncDiv  || isJ4HitLimit == HIGH)
         {
           J4error = "1";
           ErrorTrue = 1;
         }
-        if (abs(J5curStep - J5tarStep) >  J5encMult / EncDiv)
+        if (abs(J5curStep - J5tarStep) >  J5encMult / EncDiv  || isJ5HitLimit == HIGH)
         {
           J5error = "1";
           ErrorTrue = 1;
         }
-        if (abs(J6curStep - J6tarStep) >  J6encMult / EncDiv)
+        if (abs(J6curStep - J6tarStep) >  J6encMult / EncDiv  || isJ6HitLimit == HIGH)
         {
           J6error = "1";
           ErrorTrue = 1;
         }
+
+
 
         if (ErrorTrue == 1)
         {
@@ -1585,6 +1620,8 @@ void loop() {
           J6encPos.write(J6tarStep * J6encMult);
         }
 
+
+        
 
         Serial.print(ErrorCode);
         Serial.println();
@@ -3512,6 +3549,7 @@ void loop() {
       ///////////////////////////////////////////////////////////////////////////////////////////
       if(function == "LT")
       {
+          int TRcalPin=32;
           //travel track go to limit switch, no need delay, use max speed
           while (digitalRead(TRcalPin) == LOW )
           {
@@ -3527,6 +3565,74 @@ void loop() {
       {
         inData = ""; // Clear recieved buffer
       }
+
+
+
+    }
+
+  }
+
+   // int testisJ1HitLimit = digitalRead(J1calPin);
+   //      int testisJ2HitLimit = digitalRead(J2calPin);
+   //      int testisJ3HitLimit = digitalRead(J3calPin);
+   //      int testisJ4HitLimit = digitalRead(J4calPin);
+   //      int testisJ5HitLimit = digitalRead(J5calPin);
+   //      int testisJ6HitLimit = digitalRead(J6calPin);
+   //      int testisTRHitLimit = digitalRead(TRCalPin);
+
+   //      Serial.print("Hit:");
+   //      Serial.print(testisJ1HitLimit);
+   //      Serial.print(testisJ2HitLimit);
+   //      Serial.print(testisJ3HitLimit);
+   //      Serial.print(testisJ4HitLimit);
+   //      Serial.print(testisJ5HitLimit);
+   //      Serial.println(testisJ6HitLimit);
+}
+
+
+void reverseBack(int islimits[7],int movedirs[7])
+{    
+  int steps = 200;
+  int delay=500;
+  int sizeofarray = 7;
+  int driverpin[] = { J1stepPin,J2stepPin,J3stepPin,J4stepPin,J5stepPin,J6stepPin,TRstepPin } ;
+  int dirpin[] = { J1dirPin,J2dirPin,J3dirPin,J4dirPin,J5dirPin,J6dirPin,TRdirPin } ;
+
+  for(int i = 0;  i < 6; i++)
+  {
+      
+
+    if(islimits[i]==HIGH)
+    {
+
+      // Serial.print("want to reverse motor no:");
+      // Serial.print(i);
+      // Serial.print(", direction = ");
+      // Serial.println(movedirs[i]);
+      
+      int directionvalue=LOW;
+      directionvalue = movedirs[i];
+      if(i==3)
+      {
+        directionvalue=HIGH;
+      }
+
+      digitalWrite(dirpin[i], directionvalue);
+
+
+      for (int m =0;m< steps;m++)
+      {
+
+          digitalWrite(driverpin[i], HIGH);
+          delayMicroseconds(delay);
+          digitalWrite(driverpin[i], LOW);
+          delayMicroseconds(delay);  
+
+      }
     }
   }
+
+  //after reverse, delay
+  delayMicroseconds(delay);  
+
 }
