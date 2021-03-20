@@ -11,6 +11,8 @@ import os.path
 import glob # use for search serial port file in mac
 import pickle
 
+import kinematics as kn
+import numpy as np
 #define a class to connect the things
 class Hardware:
 
@@ -29,6 +31,7 @@ class Hardware:
     jointvalue = {}
     trackvalue = {}
     servovalue = {}
+    t_matrix = [0,0,0]
     Speed = 0
     ACCdur = 0
     ACCspd = 0
@@ -208,6 +211,33 @@ class Hardware:
         jogstep = int(deg / degperstep)  # jog how many step
         return jogstep
 
+    # linear movement
+    def moveLinear(self,x,y,z):
+        self.t_matrix.t[0] += x
+        self.t_matrix.t[1] += y
+        self.t_matrix.t[2] += z
+        solution = kn.iKinematic(self.t_matrix)
+        degrees = np.degrees(solution.q)
+        # validate all joint value got exists limit
+        for i in range(0, self.jointqty):
+            maxdeg = self.jsetting[i]['maxdeg']
+            mindeg = self.jsetting[i]['mindeg']
+            if degrees[i] > maxdeg:
+                return "ERR_ROTATEJOINT_OVERMAXLIMIT"
+            elif degrees[i] < mindeg:
+                return "ERR_ROTATEJOINT_OVERMINLIMIT"
+
+        #if no over limit, then move arm
+        return self.changePosition(degrees, {},{})
+
+
+    # generate forward kinematic formula
+    def refreshKinematic(self):
+        degrees = []
+        for i in range(0, self.jointqty):
+            degrees[i] = self.jointvalue[i]['degree']
+        self.t_matrix = kn.fKinematic(degrees)
+
     # move joint 0/1/2.. to x degree
     def rotateJoint(self,jointno,degree):
 
@@ -355,11 +385,11 @@ class Hardware:
         command = "LL"+ "A"+jdir[0] + jsteps[0] + "B" + jdir[1] + jsteps[1] + "C" + jdir[2] + jsteps[2] + \
                   "D" + jdir[3] + jsteps[3] + "E" + jdir[4] + jsteps[4] + "F" + jdir[5] + jsteps[5] +"S" + str(speed)
         board = self.ser_teensy   # most of the case, using teensy, this place reserved for future enhancement
-
         result = self.writeIO(board, command) # move all joint into limit
 
         if result == "OK":
             result2 = self.writeARMPosition("limit",joints) # set all encoder value to limit
+
             return result2
         else:
             return result
@@ -441,8 +471,10 @@ class Hardware:
             jointindex[i] = RobotCode.find(self.jlabels[i])
 
         #get currentstep value of all joint
+        jointdegree = [];
         for i in range(0, self.jointqty):
             startposition = jointindex[i]
+
             nextposition = None
             if self.jointqty - i > 1 : #not last loop
                 nextposition = jointindex[i+1]
@@ -463,8 +495,10 @@ class Hardware:
 
             currentdegree = round(currentdegree,2)
             self.jointvalue[i]["degree"] = currentdegree
+            jointdegree[i]=currentdegree
             log.debug("currentdegree: "+str(currentdegree)+", degreeperstep:"+str(degperstep)+", currentstep: " + str(currentstep) + ", degreefromlimit:"+str(degreefromlimit))
         log.info("done refreshStepperMotorEncoderValue")
+        self.refreshKinematic()
         self.saveData()
         return self.jointvalue
 
@@ -478,6 +512,7 @@ class Hardware:
         encodervalues = self.refreshStepperMotorEncoderValue() #arrays
         result = {
             "jointvalues":self.jointvalue,
+            "xyz":self.t_matrix,
             "servovalues": self.servovalue,
             "trackvalues": self.trackvalue,
             "board":self.checkAllBoard()
@@ -591,6 +626,12 @@ class Hardware:
         return "OK"
 
 
+
+
+    def linearMove(self,axis,mm):
+        # to support linear movement
+        # 1. get current pos
+        return "OK"
     def checkKey(self,arr, key):
         if key in arr.keys():
             return True
