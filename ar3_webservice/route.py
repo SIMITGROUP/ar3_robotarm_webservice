@@ -53,14 +53,13 @@ def moveJoint(jointname):
     return json.dumps(f.rotateJoint(jointname,degree,movetype))
 
 
-@app.route('/move_l')
-def movelinear_info():
-    return '{"status":"ERR_MOVE_LINEAR","msg":"linear moved is not supported yet"}'
 
-@app.route('/move_l/<axis>')
-def movelinear_action(axis):
-    mm = request.args.get("mm")
-    return json.dumps(f.moveLinear(axis,mm))
+@app.route('/move_l')
+def movelinear_action():
+    x = request.args.get("x")
+    y = request.args.get("y")
+    z = request.args.get("z")
+    return json.dumps(f.moveLinear(y,y,z))
 
 @app.route('/movetrack')
 def tracklist():
@@ -105,6 +104,7 @@ def runGetPosition():
 def runSetPosition():
     parameters = request.args
     return json.dumps(f.setPosition(parameters))
+
 
 
 @app.route('/beep')
