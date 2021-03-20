@@ -3,6 +3,7 @@ import sys
 sys.path.append("include")
 
 from Hardware import Hardware
+
 import time
 import threading
 import queue
@@ -25,8 +26,21 @@ def index():
 def info():
 
     result = hardware.checkMachineStatus()
+    result['xyz'] = self.getEndPointPosition(result['jointvalues'])
     return result
 
+
+def getEndPointPosition(self):
+    matrixvalue = kn.fKinematic(hardware.jointvalues)
+    x = matrixvalue.t[0]
+    y = matrixvalue.t[1]
+    z = matrixvalue.t[2]
+    xyz = [x,y,z]
+    return xyz
+
+def ew(self,xyz):
+
+    return joints
 def checkARMConnectionReady():
     print("checkARMConnectionReady")
     result = hardware.checkAllBoard()
@@ -52,6 +66,9 @@ def initSystemVariables():
         #print(i,".maxdeg",maxdeg,"mindeg",mindeg,"steplimit",steplimit,"degperstep",paras.jsetting[i]["degperstep"])
         #jointvalue[i]=readJointValue(i)
 
+
+def moveLinear(x,y,z):
+    return hardware.moveLinear(x,y,z)
 
 # rotate joint "jointno" according movetype, "absolute" = absolute degree, "move"= rotate n degree
 def rotateJoint(jname,degree,movetype):
@@ -242,7 +259,12 @@ def updateJointValue():
 
 
 def moveLinear(axis,mm):
-    result = log.getMsg('ERR_MOVE_LINEAR',"Axis:"+axis+", mm="+str(mm))
+    # result = log.getMsg('ERR_MOVE_LINEAR',"Axis:"+axis+", mm="+str(mm))
+    result = hardware.linearMove(axis,mm)
+    if result == 'OK':
+        return log.getMsg(result,"")
+    else:
+        return log.getMsg(result," on axis: "+axis + ", mm: " + str(mm))
     return result;
 
 

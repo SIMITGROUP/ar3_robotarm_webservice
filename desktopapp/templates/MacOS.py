@@ -9,7 +9,7 @@ comPortEntryFieldX=390
 comPortEntryFieldw=12
 comPortButx=495
 calibration_entryjoinx=520
-calibration_entrydhx=745
+calibration_entrydhx=715
 calibration_joinx=600
 calibration_alphax=800
 

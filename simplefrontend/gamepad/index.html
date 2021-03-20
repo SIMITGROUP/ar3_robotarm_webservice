@@ -13,37 +13,68 @@
     </head>
     <body>
     <div class="container">
+
     <!-- top status bar -->
         <div class="row">
-            <div class="col-12 col">
-                <div class="col col-12">
+            <div class="row">
+                <div class="col col-6">
                     <label class="form-label">AR3 Web Service URL</label>
                     <div id="holdindicator" class="spinner-border holdinicator" role="status">
                       <span class="visually-hidden">Loading...</span>
                     </div>
-                    <input type="text" name="webservicehost" id="webservicehost" class="form-control" value=""/>
+                    <div class="input-group">
+                        <input type="text" name="webservicehost" id="webservicehost" class="form-control" value=""/>
+                        <button onclick="fetchArmInfo()">Connect</button>
+                    </div>
                 </div>
-                <div class="col-12 col">
-                    <label class="form-label">AR3 Webcam URL (If use Raspberry PI) <button onclick="connectCamera()">Show</button></label>
-                    <input type="text" name="webcamurl" id="webcamurl" class="form-control" value=""/>
+                <div class="col-6 col">
+                    <label class="form-label">AR3 Webcam URL (If use Raspberry PI) </label>
+                    <div class="input-group">
+                        <input type="text" name="webcamurl" id="webcamurl" class="form-control" value=""/>
+                        <button onclick="connectCamera()">Show</button>
+                    </div>
                 </div>
-                <div class="col-12 col">
+                <div class="col-6 col">
                     <label class="form-label">Value Multiplier</label>
                     <input type="text" name="multiplyer" id="multiplyer" class="form-control" value="10"/>
+                </div>
+                <div class="col-6 col">
+                    <label class="form-label" id="gamepadPrompt">Connect Joystick</label>
+                        <div class="input-group">
+                            <input type="checkbox" class="" id="usegamepad" onchange="connectMachine()"/>
+
+                        </div>
                 </div>
             </div>
         </div>
         <!-- 3 columns -->
 
-            <div class="row">
+            <div class="row arm_operationbody" style="display:none">
 
                 <div id="gamepadframe" class="col col-4">
                     <div class="card">
                         <div class="card-body">
-                            <div id="gamepadstatus">Game Pad Status</div>
-                              <div class="col"><label class="form-label"><input type="checkbox" id="usegamepad" onchange="connectMachine()"> Use Joystick</label></div>
-                              <div id="gamepadPrompt"></div>
-                              <div id="gamepadDisplay"></div>
+                                <div id="moveLinearCtrlContainer" class="row">
+                                    <h4>ARM Linear Movement</h4>
+                                    <!-- row 1 -->
+                                    <div class="col col-4"></div>
+                                    <div class="col col-4"><button class="btn btn-primary">↑</button></div>
+                                    <div class="col col-4"></div>
+                                    <!-- row 2 -->
+                                    <div class="col col-4"><button class="btn btn-primary">←</button></div>
+                                    <div class="col col-4"></div>
+                                    <div class="col col-4"><button class="btn btn-primary">→</button></div>
+                                    <!-- row 3 -->
+                                    <div class="col col-4"></div>
+                                    <div class="col col-4"><button class="btn btn-primary">↓</button></div>
+                                    <div class="col col-4"></div>
+                                     <!-- row 4 -->
+                                    <div class="col col-4"><button class="btn btn-primary">Pull In</button></div>
+                                    <div class="col col-4"></div>
+                                    <div class="col col-4"><button class="btn btn-primary">Push Out</button></div>
+                                </div>
+                                <div id="moveJointCtrlContainer"></div>
+                              <div id="gamepadDisplay" style="display:none"></div>
                         </div>
                     </div>
                 </div>
@@ -74,90 +105,6 @@
                     </div>
                 </div>
             </div>
-
-    <script>
-    //a = add url record
-    //b = delete url
-    //up/down/left/right = keyboard updownleftright
-    //left axis =j1j2
-    //right axis = j2/j3
-    //
-    $('#webservicehost').val('http://localhost:5000')
-    $('#webcamurl').val('http://localhost:8000/stream.mjpg');
-    var gp ;
-    var hasGP = false;
-    var repGP;
-    var labels = ['a:Press and Play Joystick for linear movement','b:get position string','x:servo open','y:servo close','l/--','r/++','l2/t1','r2/t1','back:override rest position','start:calibrate','left axis press/no use','right axis press/no use','up/j5','down/j5','left/j6','right/j6','xbox:rest position']
-    var axislabels = ['left x/j1','left y/j2','right x/j4','right y/j3']
-    var prevdata_buttons=[]
-    var prevdata_axis = []
-
-    function canGame() {
-        return "getGamepads" in navigator;
-    }
- 
-    function reportOnGamepad() {
-        gp = navigator.getGamepads()[0];
-        var html = "";
-            html += "id: "+gp.id+"<br/>";
- 
-        for(var i=0;i<gp.buttons.length;i++) {
-            html+= "Button "+(i+1)+" ("+labels[i]+"): ";
-            if(gp.buttons[i].pressed)
-            {
-                html+= " pressed";
-                addCommand(i,gp.buttons[i],'button');
-            }
-            html+= "<br/>";
-        }
- 
-        for(var i=0;i<gp.axes.length; i++) {
-           var data1 = parseInt(gp.axes[i]);
-            html+= axislabels[i]+" Stick "+ ": "+data1+"<br/>";
-            if(data1==1 || data1==-1 )
-            {
-                addCommand(i,data1,'axis');
-            }
-        }
- 
-        $("#gamepadDisplay").html(html);
-    }
- 
-    $(document).ready(function() {
-        releasehold()
-        connectCamera();
-
-        if(canGame()) {
- 
-            var prompt = "Connect joystick by press any button in controller!";
-            $("#gamepadPrompt").text(prompt);
- 
-            $(window).on("gamepadconnected", function() {
-                hasGP = true;
-                $("#gamepadPrompt").html("Gamepad connected!");
-                console.log("connection event");
-                repGP = window.setInterval(reportOnGamepad,20);
-            });
- 
-            $(window).on("gamepaddisconnected", function() {
-                console.log("disconnection event");
-                $("#gamepadPrompt").text(prompt);
-                window.clearInterval(repGP);
-            });
- 
-            //setup an interval for Chrome
-            var checkGP = window.setInterval(function() {
-                console.log('checkGP');
-                if(navigator.getGamepads()[0]) {
-                    if(!hasGP) $(window).trigger("gamepadconnected");
-                    window.clearInterval(checkGP);
-                }
-            }, 500);
-        }
- 
-    });
-    </script>
-
     </body>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
