@@ -26,7 +26,7 @@ def index():
 def info():
 
     result = hardware.checkMachineStatus()
-    result['xyz'] = self.getEndPointPosition(result['jointvalues'])
+    result['xyz'] = getEndPointPosition(result['jointvalues'])
     return result
 
 
