@@ -229,6 +229,8 @@ class Hardware:
                 return "ERR_ROTATEJOINT_OVERMINLIMIT"
 
         #if no over limit, then move arm
+        print(degrees)
+        return "OK"
         return self.changePosition(degrees, {},{})
 
 
