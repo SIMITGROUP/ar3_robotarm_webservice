@@ -13,7 +13,7 @@ import datetime
 import log
 import armparameters as paras
 import values as v
-import calculation as calc
+
 import json
 # import webbrowser
 # import pickle
