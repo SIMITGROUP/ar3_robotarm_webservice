@@ -233,7 +233,7 @@ class Hardware:
 
     # generate forward kinematic formula
     def refreshKinematic(self):
-        degrees = []
+        degrees = [0,0,0,0,0,0]
         for i in range(0, self.jointqty):
             degrees[i] = self.jointvalue[i]['degree']
         self.t_matrix = kn.fKinematic(degrees)
