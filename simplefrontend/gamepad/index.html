@@ -49,7 +49,7 @@
         </div>
         <!-- 3 columns -->
 
-            <div class="row arm_operationbody" style="display:none">
+            <div class="row arm_operationbody" style="display:none1">
 
                 <div id="gamepadframe" class="col col-4">
                     <div class="card">
@@ -58,20 +58,20 @@
                                     <h4>ARM Linear Movement</h4>
                                     <!-- row 1 -->
                                     <div class="col col-4"></div>
-                                    <div class="col col-4"><button class="btn btn-primary">↑</button></div>
+                                    <div class="col col-4"><button class="btn btn-primary btn-movelinear" data-axis="z"  data-operator="+" title="+z">↑</button></div>
                                     <div class="col col-4"></div>
                                     <!-- row 2 -->
-                                    <div class="col col-4"><button class="btn btn-primary">←</button></div>
+                                    <div class="col col-4"><button class="btn btn-primary btn-movelinear"  data-axis="y"  data-operator="-" title="-y">←</button></div>
                                     <div class="col col-4"></div>
-                                    <div class="col col-4"><button class="btn btn-primary">→</button></div>
+                                    <div class="col col-4"><button class="btn btn-primary btn-movelinear"  data-axis="y"  data-operator="+" title="+y">→</button></div>
                                     <!-- row 3 -->
                                     <div class="col col-4"></div>
-                                    <div class="col col-4"><button class="btn btn-primary">↓</button></div>
+                                    <div class="col col-4"><button class="btn btn-primary btn-movelinear" data-axis="z"  data-operator="-" title="-z">↓</button></div>
                                     <div class="col col-4"></div>
                                      <!-- row 4 -->
-                                    <div class="col col-4"><button class="btn btn-primary">Pull In</button></div>
+                                    <div class="col col-4"><button class="btn btn-primary btn-movelinear"  data-axis="x"  data-operator="-" title="-x">Pull In</button></div>
                                     <div class="col col-4"></div>
-                                    <div class="col col-4"><button class="btn btn-primary">Push Out</button></div>
+                                    <div class="col col-4"><button class="btn btn-primary btn-movelinear"  data-axis="x"  data-operator="+" title="+x">Push Out</button></div>
                                 </div>
                                 <div id="moveJointCtrlContainer"></div>
                               <div id="gamepadDisplay" style="display:none"></div>

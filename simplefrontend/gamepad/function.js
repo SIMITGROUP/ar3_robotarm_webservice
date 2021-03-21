@@ -147,6 +147,26 @@ minmmultiplier = 1
             let element_id = $(this).attr('id');
             setJointValue(element_id,this.value);
         });
+
+        $('.btn-movelinear').unbind().on('click',function(){
+            let data={x:0,y:0,z:0};
+            let axis = $(this).data('axis');
+            console.log('click');
+            let operator  = $(this).data('operator');
+            let value = parseFloat($('#multiplyer').val());
+            if(operator == '-')
+            {
+                    data[axis] -= value ;
+            }
+            else
+            {
+                    data[axis] += value ;
+            }
+            moveLinear(data);
+
+
+        });
+
         $('.movejoint').unbind().on('click',function(){
             let multiplyer = parseFloat($('#multiplyer').val());
             let type = $(this).data('type');
@@ -574,6 +594,21 @@ function setJointValue(jointno,v)
     {
 //            alert("Server is unreachable.");
 //            $('.arm_operationbody').hide();
+    })
+}
+
+function moveLinear(data)
+{
+    console.log('moveLinear');
+    let myurl = ar3webservicehost + '/move_l';
+    jsonajax(myurl,data).done(function(r)
+    {
+        console.log(r)
+    }).fail(function(e)
+    {
+        console.log(e)
+        //            alert("Server is unreachable.");
+        //            $('.arm_operationbody').hide();
     })
 }
 function displayArmInformation(data)
