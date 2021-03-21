@@ -56,9 +56,9 @@ def moveJoint(jointname):
 
 @app.route('/move_l')
 def movelinear_action():
-    x = request.args.get("x")
-    y = request.args.get("y")
-    z = request.args.get("z")
+    x = float(request.args.get("x"))
+    y = float(request.args.get("y"))
+    z = float(request.args.get("z"))
     result = f.moveLinear(x, y, z)
     return json.dumps(result)
 
