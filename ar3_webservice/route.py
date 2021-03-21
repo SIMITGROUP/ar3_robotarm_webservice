@@ -59,7 +59,8 @@ def movelinear_action():
     x = request.args.get("x")
     y = request.args.get("y")
     z = request.args.get("z")
-    return json.dumps(f.moveLinear(y,y,z))
+    result = f.moveLinear(x, y, z)
+    return json.dumps(result)
 
 @app.route('/movetrack')
 def tracklist():
