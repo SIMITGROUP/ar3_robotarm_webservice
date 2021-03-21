@@ -31,7 +31,9 @@ def info():
 
 
 def getEndPointPosition(self):
-    matrixvalue = kn.fKinematic(hardware.jointvalues)
+    # kn.fKinematic(hardware.jointvalues)
+    hardware.refreshKinematic()
+    matrixvalue = hardware.t_matrix
     x = matrixvalue.t[0]
     y = matrixvalue.t[1]
     z = matrixvalue.t[2]
