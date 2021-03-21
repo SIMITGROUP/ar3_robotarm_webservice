@@ -354,6 +354,7 @@ class Hardware:
 
         command = command + "S" + Speed + "G" + ACCdur + "H" + ACCspd + "I" + DECdur + "K" + DECspd
         print("before move all1 ")
+        print(newjointsteps);
         command = command + "U" + str(newjointsteps[0]['step']) + "V" + str(newjointsteps[1]['step']) + "W" + str(newjointsteps[2]['step']) + \
                   "X" + str(newjointsteps[3]['step']) + "Y" + str(newjointsteps[4]['step']) + "Z" + str(newjointsteps[5]['step']) + "\n"
         print("before move all 2 ")
