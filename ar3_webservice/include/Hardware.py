@@ -213,6 +213,8 @@ class Hardware:
 
     # linear movement
     def moveLinear(self,x,y,z):
+        print(self.t_matrix)
+        return "OK"
         self.t_matrix.t[0] += x
         self.t_matrix.t[1] += y
         self.t_matrix.t[2] += z
