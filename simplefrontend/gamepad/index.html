@@ -17,7 +17,7 @@
     <!-- top status bar -->
         <div class="row">
             <div class="row">
-                <div class="col col-6">
+                <div class="col col-5">
                     <label class="form-label">AR3 Web Service URL</label>
                     <div id="holdindicator" class="spinner-border holdinicator" role="status">
                       <span class="visually-hidden">Loading...</span>
@@ -27,23 +27,32 @@
                         <button onclick="fetchArmInfo()">Connect</button>
                     </div>
                 </div>
-                <div class="col-6 col">
+                <div class="col-5 col">
                     <label class="form-label">AR3 Webcam URL (If use Raspberry PI) </label>
                     <div class="input-group">
                         <input type="text" name="webcamurl" id="webcamurl" class="form-control" value=""/>
                         <button onclick="connectCamera()">Show</button>
                     </div>
                 </div>
-                <div class="col-6 col">
-                    <label class="form-label">Value Multiplier</label>
-                    <input type="text" name="multiplyer" id="multiplyer" class="form-control" value="10"/>
+                <div class="col-2 col">
+                    <button class="btn btn-info col col-12 btn-backhome">Back To Home Pos.</button>
+                    <button class="btn btn-warning  col col-12 btn-calibrate">Calibrate Arm</button>
                 </div>
-                <div class="col-6 col">
+                <div class="col-5 col">
+                    <label class="form-label">Value Multiplier</label>
+                    <input type="number" name="multiplyer" id="multiplyer" class="form-control" value="10"/>
+                </div>
+                <div class="col-5 col">
                     <label class="form-label" id="gamepadPrompt">Connect Joystick</label>
                         <div class="input-group">
                             <input type="checkbox" class="" id="usegamepad" onchange="connectMachine()"/>
 
                         </div>
+                </div>
+                <div class="col-2 col">
+                    <button class="btn btn-danger  col col-12 btn-overriderest">Override Rest Pos.</button>
+
+
                 </div>
             </div>
         </div>
@@ -62,7 +71,7 @@
                                     <div class="col col-4"></div>
                                     <!-- row 2 -->
                                     <div class="col col-4"><button class="btn btn-primary btn-movelinear"  data-axis="y"  data-operator="-" title="-y">←</button></div>
-                                    <div class="col col-4"></div>
+                                    <div class="col col-4" id="linearmovedistance"></div>
                                     <div class="col col-4"><button class="btn btn-primary btn-movelinear"  data-axis="y"  data-operator="+" title="+y">→</button></div>
                                     <!-- row 3 -->
                                     <div class="col col-4"></div>

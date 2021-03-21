@@ -136,6 +136,10 @@ minmmultiplier = 1
 
         });
 
+        $('#linearmovedistance').html($('#multiplyer').val()+'mm');
+        $('#multiplyer').on('change',function(){
+            $('#linearmovedistance').html($(this).val()+'mm');
+        });
 
         $(document).on('mouseup','.slider',function(){
 
@@ -153,7 +157,7 @@ minmmultiplier = 1
             let axis = $(this).data('axis');
             console.log('click');
             let operator  = $(this).data('operator');
-            let value = parseFloat($('#multiplyer').val());
+            let value = parseFloat($('#multiplyer').val()) / 1000;
             if(operator == '-')
             {
                     data[axis] -= value ;
@@ -165,6 +169,39 @@ minmmultiplier = 1
             moveLinear(data);
 
 
+        });
+        $('.btn-overriderest').unbind().on('click',function(){
+            let myurl = ar3webservicehost + '/calibrate/setrest';
+             jsonajax(myurl,'').done(function(r)
+                {
+                    fetchArmInfo();
+
+                }).fail(function(e)
+                {
+                    fetchArmInfo();
+                })
+        });
+        $('.btn-calibrate').unbind().on('click',function(){
+            let myurl = ar3webservicehost + '/calibrate/all';
+             jsonajax(myurl,'').done(function(r)
+                {
+                    fetchArmInfo();
+
+                }).fail(function(e)
+                {
+                    fetchArmInfo();
+                })
+        });
+        $('.btn-backhome').unbind().on('click',function(){
+            let myurl = ar3webservicehost + '/movetorestposition';
+             jsonajax(myurl,'').done(function(r)
+                {
+                    fetchArmInfo();
+
+                }).fail(function(e)
+                {
+                    fetchArmInfo();
+                })
         });
 
         $('.movejoint').unbind().on('click',function(){
@@ -476,6 +513,7 @@ function addCommand(i,value,type)
 
 					url=''
 					$('#multiplyer').val(multiplyer);
+					$('#linearmovedistance').html(multiplyer+'mm')
 				}
 				else if(i==1)
 				{
@@ -603,10 +641,12 @@ function moveLinear(data)
     let myurl = ar3webservicehost + '/move_l';
     jsonajax(myurl,data).done(function(r)
     {
-        console.log(r)
+                console.log(r);
+                fetchArmInfo();
     }).fail(function(e)
     {
-        console.log(e)
+        console.log(e);
+        fetchArmInfo();
         //            alert("Server is unreachable.");
         //            $('.arm_operationbody').hide();
     })
