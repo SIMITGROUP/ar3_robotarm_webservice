@@ -11,14 +11,9 @@ class AR3(DHRobot):
             pi = sym.pi()
         else:
             from math import pi
-            zero = 0.0
-
         deg = pi / 180
-        inch = 0.0254
 
-        super().__init__(
-            [
-
+        super().__init__( [
                 RevoluteDH(d=0.16977, alpha=-pi / 2, a=0.0642),
                 RevoluteDH(d=0, alpha=0, a=0.305),
                 RevoluteDH(d=0, alpha=pi / 2, a=0),
@@ -26,12 +21,7 @@ class AR3(DHRobot):
                 RevoluteDH(d=0, alpha=pi / 2, a=0),
                 RevoluteDH(d=-0.03625, alpha=0, a=0),
 
-            ],
-            name="AR3",
-            manufacturer="AR3 ",
-            # keywords=('dynamics', 'symbolic'),
-            # symbolic=symbolic
-        )
+            ], name="AR3",manufacturer="AR3 ",)
 
         self.addconfiguration("qz", np.array([0, 0, 0, 0, 0, 0]))
         # horizontal along the x-axis
