@@ -1,5 +1,6 @@
 # this file dedicated use for store mathmetical calculation like change rotation to linear movement
 # not in use yet
+import numpy as np
 from ar3model import AR3
 robot = AR3()
 
