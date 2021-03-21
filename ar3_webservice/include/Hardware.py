@@ -471,7 +471,7 @@ class Hardware:
             jointindex[i] = RobotCode.find(self.jlabels[i])
 
         #get currentstep value of all joint
-        jointdegree = [];
+        jointdegree = [0,0,0,0,0,0];
         for i in range(0, self.jointqty):
             startposition = jointindex[i]
 
