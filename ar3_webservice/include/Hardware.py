@@ -218,19 +218,21 @@ class Hardware:
         self.t_matrix.t[1] += y
         self.t_matrix.t[2] += z
         solution = kn.iKinematic(self.t_matrix)
-        degrees = np.degrees(solution.q)
+        npdegrees = np.degrees(solution.q)
+        degrees=[0,0,0,0,0,0]
         # validate all joint value got exists limit
         for i in range(0, self.jointqty):
             maxdeg = self.jsetting[i]['maxdeg']
             mindeg = self.jsetting[i]['mindeg']
-            if degrees[i] > maxdeg:
+            if npdegrees[i] > maxdeg:
                 return "ERR_ROTATEJOINT_OVERMAXLIMIT"
-            elif degrees[i] < mindeg:
+            elif npdegrees[i] < mindeg:
                 return "ERR_ROTATEJOINT_OVERMINLIMIT"
-
+        degrees[i]=npdegrees[i]
         #if no over limit, then move arm
-        print(degrees)
-        return "OK"
+        # print(degrees)
+
+        # return "OK"
         return self.changePosition(degrees, {},{})
 
 
