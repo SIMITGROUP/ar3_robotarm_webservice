@@ -3,7 +3,6 @@
 from ar3model import AR3
 robot = AR3()
 
-
 def fKinematic(degrees):
     rad  = np.radians(degrees)
     T = robot.fkine(rad)
