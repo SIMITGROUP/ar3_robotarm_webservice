@@ -16,5 +16,5 @@ def getXYZ(T):
 
 
 def iKinematic(T):
-    sol = robot.ikine_LM(T)
+    sol = robot.ikine_LMS(T)
     return sol

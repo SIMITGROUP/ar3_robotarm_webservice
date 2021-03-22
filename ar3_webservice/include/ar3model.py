@@ -23,9 +23,9 @@ class AR3(DHRobot):
 
             ], name="AR3",manufacturer="AR3 ",)
 
-        self.addconfiguration("qz", np.array([0, 0, 0, 0, 0, 0]))
+        #self.addconfiguration("qz", np.array([0, 0, 0, 0, 0, 0]))
         # horizontal along the x-axis
-        self.addconfiguration("qr", np.r_[180, 0, 0, 0, 90, 0] * deg)
+        #self.addconfiguration("qr", np.r_[180, 0, 0, 0, 90, 0] * deg)
 
 
 if __name__ == '__main__':  # pragma nocover
