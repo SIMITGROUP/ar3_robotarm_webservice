@@ -12,7 +12,12 @@ T = kn.fKinematic(deg)
 print("Initial T.t")
 print(T.t)
 # x+10mm, y+1mm, z-2mm
-T.t[0]+=0.01
+x = 200
+y = 20
+z = 200
+T.t[0]+=x/1000
+T.t[1]+=y/1000
+T.t[2]+=z/1000
 
 
 print("New T.t")
@@ -24,6 +29,11 @@ print(deg)
 print("new degrees:")
 
 newdeg=np.degrees(sol.q)
-# newdeg[2] = newdeg[2] + 90
-# newdeg[5] = newdeg[5] - 180
+newdeg[2] = newdeg[2] + 90
+newdeg[3] =  newdeg[3] - 180
+
+if newdeg[3] < -180:
+    newdeg[3] =   newdeg[3] + 360
+
+newdeg[4] = newdeg[4] * -1
 print(newdeg)
