@@ -1,0 +1,51 @@
+{
+  "name": "routine1",
+  "description": "it keep repeat between 2 position and play the track and servo",
+  "variables": {
+    "@trackhomeposition@": 10,
+    "@j4home@": 0,
+    "@para1@": "data1",
+    "$para2$": 2,
+    "@runcount@": 0,
+    "@runcounttxt@": "",
+    "@parastring@": "",
+  },
+  "routines": {
+      "main": {
+        "math": {
+          "@runcount@": " @runcount@ + 1",
+        },
+        "string": {
+          "@parastring@" : ["para1 = ","@para1@",", para2 = ","$para2$"],
+          "@runcounttxt@": ["AR3 back to home ","@runcount@"," times"]
+        },
+        "movejoint": { "j1": 10,  "j2": 0, "j3": 0, "j4": "@j4home@", "j5": 0, "j6": 0 },
+        "movejoint": { "j1": -10,  "j2": 0, "j3": 0, "j4": "@j4home@", "j5": 0, "j6": 0 },
+        "movejoint": { "j1": 0,  "j2": 0, "j3": 0, "j4": "@j4home@", "j5": 0, "j6": 0 },
+        "callin": ["opengripper1","settrackhome"],
+      },
+      "opengripper1": {
+          "moveservo": { "servo1": 0 },
+          "moveservo": { "servo1": 110 },
+          "moveservo": { "servo1": 90 }
+      },
+      "settrackhome": {
+          "movetrack": { "track1": "@trackhomeposition@" }
+      },
+
+      "othersubroutine": {
+        "movelinear": { "x": 30,"y": 20,"z": 20 },
+        "io":{"pin": 30,"type": "read/write","pintype": "analog/digital","storein": "@para2@"},
+        "case": {
+          "@para2@=1": ["main"],
+          "@para2@ != 1": ["settrackhome"],
+        },
+        "callout": {
+            "routine1":  {
+              "@para1@": "my sample string from parent",
+              "@j4home@": 20
+            }
+          }
+      }
+  }
+}

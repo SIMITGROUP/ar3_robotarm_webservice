@@ -15,7 +15,7 @@ import kinematics as kn
 import numpy as np
 #define a class to connect the things
 class Hardware:
-
+    initHardwareConnection = False
     ser_teensy = None
     ser_arduino = None
     teensyport = ""  # windows = COM3,4... Linux = /dev/ttyACM0,1,2,.. MAC = /dev/tty.usbmodem0000000
@@ -31,7 +31,7 @@ class Hardware:
     jointvalue = {}
     trackvalue = {}
     servovalue = {}
-    t_matrix = [0,0,0]
+    t_matrix = None
     Speed = 0
     ACCdur = 0
     ACCspd = 0
@@ -58,11 +58,15 @@ class Hardware:
         self.ACCspd = paras.ACCspd
         self.DECdur = paras.DECdur
         self.DECspd = paras.DECspd
-        self.loadData()
-        self.connectAllSerialPort()
-        # self.restoreAllServo()
-        self.saveData()
-        self.refreshStepperMotorEncoderValue()
+
+        if self.initHardwareConnection:
+            self.loadData()
+            self.connectAllSerialPort()
+            self.saveData()
+            self.refreshStepperMotorEncoderValue()
+
+
+
 
 
 
@@ -197,7 +201,7 @@ class Hardware:
         try:
             board.write(cmdstr)
             time.sleep(self.serialwritesleep)
-            result = board.readline()
+            result = board.readline().decode()
             log.debug(result)
         except Exception as e:
             errorcode = "ERR_SERIAL_DEVICENOTWRITABLE"
@@ -213,6 +217,9 @@ class Hardware:
 
     # linear movement
     def moveLinear(self,x,y,z):
+
+        if self.t_matrix== None:
+            return "ERR_KINEMATIC_UNDEFINEMATRIX"
 
         self.t_matrix.t[0] += x
         self.t_matrix.t[1] += y
@@ -253,6 +260,8 @@ class Hardware:
         if checkjointres != "OK":
             return checkjointres
 
+        if self.initHardwareConnection == False:
+            return "ERR_HARDWARE_NOINITIALISE"
 
         if type(degree) is str:
             degree = float(degree)
@@ -375,6 +384,11 @@ class Hardware:
             self.setServo(k,v)
 
         return result
+
+    def setSpeed(self,Speed):
+        self.Speed = Speed
+        return "OK"
+
     # calibrate all joint according variable joints. [1,1,1,1,1,1] = all, [0,0,1,0,0,0] = J3 only
     def goAllJointLimit(self,joints):
         jsteps = [0,0,0,0,0,0]
@@ -470,9 +484,11 @@ class Hardware:
         for i in range (0, self.jointqty):
             steps[i] = self.jointvalue[i]["step"]
         command = "GP" + "U" + str(steps[0]) + "V" + str(steps[1]) + "W" + str(steps[2]) + "X" + str(steps[3]) + "Y" + str(steps[4]) + "Z" + str(steps[5]) + "\n"
-        RobotCode = self.readIO(self.ser_teensy, command).decode()
+        RobotCode = self.readIO(self.ser_teensy, command)
         if RobotCode == "":
             return "ERR_ENCODER_NOREPLY"
+        elif self.left(RobotCode,4) == 'ERR_':
+            return RobotCode
         # get position index of A/B/C...
         for i in range(0, self.jointqty):
             jointindex[i] = RobotCode.find(self.jlabels[i])
@@ -516,10 +532,10 @@ class Hardware:
     # 3. check encoder/power/drive ready (have to read specific value from teensy)
     def checkMachineStatus(self):
         log.info("enter checkMachineStatus")
-        encodervalues = self.refreshStepperMotorEncoderValue() #arrays
+        self.refreshStepperMotorEncoderValue() #arrays
         result = {
             "jointvalues":self.jointvalue,
-            "xyz":self.t_matrix,
+            "xyz":self.t_matrix.t,
             "servovalues": self.servovalue,
             "trackvalues": self.trackvalue,
             "board":self.checkAllBoard()
@@ -546,10 +562,13 @@ class Hardware:
                         stepvalue = self.jsetting[i]['steplimit']
 
                 command = command + self.jlabels[i] + str(stepvalue)
-        self.writeIO(self.ser_teensy, command)
+        result = self.writeIO(self.ser_teensy, command)
         log.debug("serial command: "+command )
         log.info("done writeARMPosition")
-        return "OK"
+        if self.left(result,4) == "ERR_":
+            return result
+        else:
+            return "OK"
 
     #only use during calibrate all, from arm from all limit switch back to centre rest position
     def moveFromLimitToRestPosition(self,joints):
@@ -582,8 +601,17 @@ class Hardware:
         result = self.writeIO(board, command)
         result2 = self.setTrackValue(trackname, 0)
 
+    def getAllServos(self):
+        servos = []
+        for k, v in self.servosetting.items():
+            servos.append(k)
+        return servos
 
-
+    def getAllTracks(self):
+        tracks = []
+        for k, v in self.tracksetting.items():
+            tracks.append(k)
+        return tracks
     # move travel track to limit switch
     def beep(self,isbeep):
         command ='BP'+isbeep
@@ -592,13 +620,15 @@ class Hardware:
         return result
     # set track position value
     def setTrackValue(self,trackname,mm):
-
-        TrackStepLim = self.tracksetting[trackname]['steplimit']
-        TrackLength = self.tracksetting[trackname]['length']
-        self.trackvalue[trackname]["mm"] = mm
-        self.trackvalue[trackname]["step"] = int((TrackStepLim / TrackLength) * mm)
-        self.saveData()
-        return "OK"
+        if trackname in self.tracksetting.keys():
+            TrackStepLim = self.tracksetting[trackname]['steplimit']
+            TrackLength = self.tracksetting[trackname]['length']
+            self.trackvalue[trackname]["mm"] = mm
+            self.trackvalue[trackname]["step"] = int((TrackStepLim / TrackLength) * mm)
+            self.saveData()
+            return "OK"
+        else:
+            return "ERR_TRACK_INVALID"
 
     def getTrackValues(self):
         return self.trackvalue
@@ -632,8 +662,12 @@ class Hardware:
 
         return "OK"
 
+        #### below store others function for string and data processing only ####
+    def left(self, s, amount):
+        return s[:amount]
 
-
+    def right(self, s, amount):
+        return s[-amount:]
 
     def linearMove(self,axis,mm):
         # to support linear movement

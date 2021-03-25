@@ -1,9 +1,10 @@
-## this file define actual execution of the program ##
+## this file define actual execution of the routines ##
 import sys
+import os
+import json
 sys.path.append("include")
-
 from Hardware import Hardware
-
+from Routine import Routine
 import time
 import threading
 import queue
@@ -13,8 +14,6 @@ import datetime
 import log
 import armparameters as paras
 import values as v
-
-import json
 # import webbrowser
 # import pickle
 err_log = {}
@@ -23,12 +22,38 @@ err_log = {}
 def index():
     return '{"status":"OK","msg":"Welcome index page of AR3 webservice, you can call /help, /info now"}'
 
-def info():
-
+###################### process all routes ###########################
+def run_info(req):
     result = hardware.checkMachineStatus()
     result['xyz'] = getEndPointPosition(result['jointvalues'])
     return result
 
+def run_calibrate( req ):
+    return log.getMsg('OK','You can calibrate all joint with /calibrate/all, calibrate single joint (j1-j6) with /calibrate/j1, or override current arm position as rest position by using /calibrate/setrest')
+
+# def run_calibrate(resource,req):
+#     return log.getMsg('OK','You can calibrate all joint with /calibrate/all, calibrate single joint (j1-j6) with /calibrate/j1, or override current arm position as rest position by using /calibrate/setrest')
+
+
+
+def run_move_l(req):
+    return {}
+def run_move_j(req):
+    return {}
+def run_servo(req):
+    return {}
+def run_movetrack(req):
+    return {}
+def run_calibratetrack(req):
+    return {}
+def run_calibratetrack(resource,req):
+    return {}
+def run_movetorestposition(req):
+    return {}
+def run_getposition(req):
+    return {}
+
+############# old backup code #################
 
 def getEndPointPosition(self):
     # kn.fKinematic(hardware.jointvalues)
@@ -55,18 +80,11 @@ def initSystemVariables():
         maxdeg =paras.jsetting[i]["maxdeg"]
         mindeg =paras.jsetting[i]["mindeg"]
         steplimit = paras.jsetting[i]["steplimit"]
-        # J1NegAngLim = float(J1NegAngLimEntryField.get())
-        # J1PosAngLim = float(J1PosAngLimEntryField.get())
-        # J1StepLim = int(J1StepLimEntryField.get())
-        # J1DegPerStep = float((J1PosAngLim - J1NegAngLim) / float(J1StepLim))
         paras.jsetting[i]["degperstep"] = round( float((maxdeg - mindeg)/float(steplimit)),8)
-
     for k,v in paras.tracksetting.items():
         steplimit = paras.tracksetting[k]['steplimit']
         length = paras.tracksetting[k]['length']
         paras.tracksetting[k]['mmperstep'] = round( (length/steplimit),8)
-        #print(i,".maxdeg",maxdeg,"mindeg",mindeg,"steplimit",steplimit,"degperstep",paras.jsetting[i]["degperstep"])
-        #jointvalue[i]=readJointValue(i)
 
 
 def moveLinear(x,y,z):
@@ -134,9 +152,6 @@ def calibrateTrack(trackname,limitswitch):
     elif type(limitswitch) is int:
         islimitswitch= limitswitch
 
-
-
-
     if islimitswitch == 0: # no limit switch, use current position as 0
         result = hardware.setTrackValue(trackname,0)
     else:
@@ -147,7 +162,7 @@ def calibrateTrack(trackname,limitswitch):
 def moveTrack(trackname, mm, movetype):
     #at the moment, any trackname also convert to track1
     if (checkKey(paras.tracksetting, trackname) == False):
-        return log.getMsg('ERR_TRACK_INVALIDTRACK', trackname + ' does not exists')
+        return log.getMsg('ERR_TRACK_INVALID', trackname + ' does not exists')
 
     # validate movetype is received, and with proper value
     if type(movetype) is not str:
@@ -322,13 +337,76 @@ def checkKey(arr, key):
         return False
 
 
+
+############## process robot arm routines ############################
+def getRoutines():
+    res = routine.getAllRoutines()
+    res['status']="OK"
+    return res
+
+def getRoutineContent(routinename):
+    res = routine.getRoutineContent(routinename)
+    return res
+
+def getRoutineInfo(routinename):
+    content = getRoutineContent(routinename)
+    if content == "":
+        return log.getMsg("ERR_ROUTE_NOTFOUND", routinename + " not found")
+    else :
+        if is_json(content):
+            return json.loads(content)
+        else:
+            return content
+
+
+
+def runRoutine(routinename):
+    content = getRoutineContent(routinename)
+    if is_json(content):
+        j =  json.loads(content)
+    # for k, v in j.items():
+
+
+
+
+    return log.getMsg("OK","")
+
+
+def deleteRoutine(routinename):
+    content = getRoutineContent(routinename)
+    if content == "":
+        return log.getMsg("ERR_ROUTE_NOTFOUND", routinename + " not found")
+    else:
+        filename = '../routines' + "/" + routinename + ".json"
+        os.remove(filename)
+        return log.getMsg("OK",routinename +" removed")
+
+def addRoutine():
+    return log.getMsg("OK","")
+
+def overrideRoutine():
+    return log.getMsg("OK","")
+
+
+
+
+
+
+
+
+
+
+
+############## start up routines, initialize data and etc ##########################################
 try:
-    initSystemVariables()
-    print("after init system variables")
-    hardware = Hardware(v, paras)
+    print("Start")
+    #initSystemVariables()
+    #print("after init system variables")
+    #hardware = Hardware(v, paras)
+    #routine = Routine()
     # print("hardware type=",type(hardware))
-    print("Try connecting and try")
-    print("Arm connected")
+    #print("Try connecting and try")
+    #print("Arm connected")
 except Exception as e:
     err_log = log.getMsg("ERR_CONNECT_FAILED01", e)
     print("Failed connect arm ", e)

@@ -1,18 +1,20 @@
 from flask import Flask,request,render_template
-import functions as f
+from include.Routine import Routine
 import json
 
+# import functions as f
 # from flask_apscheduler import APScheduler
 # class Config(object):
 #     SCHEDULER_API_ENABLED = True
 
+
+rt = Routine()
 app = Flask(__name__,template_folder = "views")
+
 # app.config.from_object(Config())
 # scheduler = APScheduler()
 # scheduler.init_app(app)
 # scheduler.start()
-
-
 # # to avoid something goes wrong, every few second refresh encoder value
 # @scheduler.task('interval', id='refresh_position', seconds=3)
 #     a=1
@@ -20,15 +22,60 @@ app = Flask(__name__,template_folder = "views")
 
 @app.route('/')
 def index():
-    return json.dumps(f.index())
+    return json.dumps(rt.run_index())
 
+
+@app.route('/<methodname>')
+@app.route('/<methodname>/<resource>')
+@app.route('/<methodname>/<resource>/<subresource>')
+def getResource(methodname,resource=None,subresource=None):
+    actionname = 'run_' + methodname
+    if hasattr(rt, actionname) and callable(getattr(rt, actionname)):
+        func = getattr(rt, actionname)
+        rt.methodname = methodname
+
+        if type(resource) == str:
+            resource = resource.lower()
+        if type(subresource) == str:
+            subresource = subresource.lower()
+
+        rt.resource = resource
+        rt.subresource = subresource
+        rt.req = request.values
+        result = func()
+        return json.dumps(result)
+    else:
+        return json.dumps({'status':'Failed','msg': 'method ' + actionname +' is not exists'})
+
+## some override setting at below, just ignore it don't change ##
+@app.before_request
+def before_show():
+    # return "OK"
+    a=1
+    #armstatus = f.checkARMConnectionReady()
+    #if armstatus == "OK":
+    #    result = f.updateJointValue()
+    #else:
+    #    return armstatus
+#
+
+@app.after_request
+def apply_header(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Content-Type"] = "application/json"
+    return response
+
+############### backup of all unused route, will delete afterward ########################
+
+
+'''
 @app.route('/help')
 def help():
     return '{"status":"OK","msg":"Hello, this is help, you have nothing!"}'
 
-@app.route('/info')
-def info():
-    return json.dumps(f.info())
+    # @app.route('/info')
+# def info():
+#     return json.dumps(f.info())
 
 @app.route('/servo')
 def servolist():
@@ -107,6 +154,41 @@ def runSetPosition():
     return json.dumps(f.setPosition(parameters))
 
 
+#########################related the routines #################
+# list all routines
+@app.route('/routines')
+def getRoutines():
+    return json.dumps(f.getRoutines())
+
+#get routine info, will verify routine syntax again
+@app.route('/routines/<routinename>')
+def getRoutineInfo(routinename):
+    return json.dumps(f.getRoutineInfo(routinename))
+
+#execute routine
+@app.route('/routines/<routinename>/run')
+def runRoutines(routinename):
+    return json.dumps(f.runRoutine(routinename))
+
+
+#delete routine, failed if it not exists
+@app.route('/routines/<routinename>/delete')
+def deleteRoutines(routinename):
+    return json.dumps(f.deleteRoutine(routinename))
+
+#upload routine file, override existing. failed if it not exists or syntax error
+@app.route('/routines/override')
+def overrideRoutine():
+    return json.dumps(f.overrideRoutine())
+
+#add new routine file, failed if there is existing or syntax error
+@app.route('/routines/addnew')
+def addRoutine():
+    return json.dumps(f.addRoutine())
+
+
+
+
 
 @app.route('/beep')
 def beepInfo():
@@ -117,21 +199,4 @@ def runBeep(onoff):
     return json.dumps(f.runBeep(onoff))
 
 
-## some override setting at below, just ignore it don't change ##
-@app.before_request
-def before_show():
-    # return "OK"
-    a=1
-    armstatus = f.checkARMConnectionReady()
-    if armstatus == "OK":
-        result = f.updateJointValue()
-    else:
-        return armstatus
-#
-
-@app.after_request
-def apply_header(response):
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Content-Type"] = "application/json"
-    return response
-
+'''

@@ -1,4 +1,4 @@
-# this file keep all run time value variable name which will change after program running
+# this file keep all run time value variable name which will change after routines running
 teensyport="" #win:com3, mac:/dev/tty.usbmodem70426001, linux: /dev/ttyACM0
 arduinoport="" #win: com4, mac: /dev/tty.usbserial-14410, linux: /dev/ttyUSB0
 servovalue={
