@@ -28,7 +28,7 @@ class Kernel:
     req = {}
     def __init__(self):
         try:
-            self.routinepath =  os.getcwd() + '/../include'
+            self.routinepath =  os.getcwd() + '/routines'
             for i in range(0, paras.jointqty):
                 maxdeg = paras.jsetting[i]["maxdeg"]
                 mindeg = paras.jsetting[i]["mindeg"]
@@ -51,7 +51,7 @@ class Kernel:
 
     # display welcome msg
     def api_index(self):
-        return {"status":"OK","msg":"Welcome index page of AR3 webservice, you can call /help, /info now"}
+        return {"status":"OK","msg":"Welcome index page of AR3 webservice, you can call /info now"}
 
     # display robot arm environment data
     def api_info(self):
@@ -143,6 +143,30 @@ class Kernel:
     def api_setspeed(self):
         result = self.setSpeed(self.req.get('speed'))
         return log.getMsg(result, "")
+
+
+    def api_routine(self):
+        if self.resource == None:
+            list = self.getAllRoutines()
+            separator = ","
+            availableroutine = separator.join(list)
+            return log.getMsg('OK',f"Available routines is {availableroutine}")
+
+        routinename = self.resource
+        othersinfo = self.subresource
+        # direct give routine json content
+        if othersinfo == None:
+            result = self.getRoutineInfo(routinename)
+
+            if not self.isErrorCode(result):
+                return result
+            else:
+                return log.getMsg(result,f"Invalid json content, please check again {routinename}.json.")
+        elif othersinfo == "run":
+            result = self.runRoutine(routinename)
+        else:
+            result ="ERR_ROUTINE_OPERATIONUNKNOWN"
+        return log.getMsg(result)
 
     ########################################################################
     ##################  process robot arm operations #######################
@@ -416,34 +440,40 @@ class Kernel:
         for file in os.listdir(self.routinepath):
             if file.endswith(self.routineextenstion):
                 routinename = file.replace(self.routineextenstion,'')
-                file.append(routinename)
+                files.append(routinename)
         return files
 
-    def getRoutineInfo(self,routinename,getcleartext= False):
-        filename = self.routinepath + "/" + routinename + self.routineextenstion
-        if os.path.isfile(filename):
-            try:
-                f = open(filename)
-                if f == False:
-                    return "ERR_ROUTINE_NOTEXISTS"
+    def getRoutineInfo(self,routinename, getcleartext= False):
+        rt = Routine(self)
+        result = rt.load(routinename)
+        return result
 
-                content = f.read()
-                if getcleartext == True:
-                    return content
-                else:
-                    if is_json(content):
-                        return json.load(content)
-                    else:
-                        return "ERR_ROUTINE_ISNOTJSON"
-            except IOError:
-                print("File not accessible")
-                return ""
-            finally:
-                f.close()
-
-            return ""
-        else:
-            return ""
+        # else:
+        #     return result
+        # filename = self.routinepath + "/" + routinename + self.routineextenstion
+        # if os.path.isfile(filename):
+        #     try:
+        #         f = open(filename)
+        #         if f == False:
+        #             return "ERR_ROUTINE_NOTEXISTS"
+        #
+        #         content = f.read()
+        #         if getcleartext == True:
+        #             return content
+        #         else:
+        #             if is_json(content):
+        #                 return json.load(content)
+        #             else:
+        #                 return "ERR_ROUTINE_ISNOTJSON"
+        #     except IOError:
+        #         print("File not accessible")
+        #         return ""
+        #     finally:
+        #         f.close()
+        #
+        #     return ""
+        # else:
+        #     return ""
 
     #upload new routine.json
     def addRoutine(self):

@@ -29,7 +29,8 @@ errorcodes ={
     "ERR_UNDEFINED_SUBROUTINEUNDEFINETYPE":"There is 1 or more task in sub routine undefine type",
     "ERR_UNDEFINED_SUBROUTINEWRONGTYPE":"There is 1 or more task in sub routine use unsupported type",
     "ERR_SUBROUTINE_CALL_SUBROUTINEUNDEFINED":"There is 1 or more call task undefined subroutine",
-    "ERR_SUBROUTINE_UNSUPPORTMOVETYPE":"Sub routine movetype is not supported"
+    "ERR_SUBROUTINE_UNSUPPORTMOVETYPE":"Sub routine movetype is not supported",
+    "ERR_ROUTINE_OPERATIONUNKNOWN": "No operation defined in api"
 }
 # log 1=error/danger, 2 = warning, 3 = simple info, 4 = debug
 ERROR = 1

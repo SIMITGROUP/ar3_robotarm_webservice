@@ -533,9 +533,13 @@ class Hardware:
     def checkMachineStatus(self):
         log.info("enter checkMachineStatus")
         self.refreshStepperMotorEncoderValue() #arrays
+        xyz = [ 0,0,0 ]
+        if self.t_matrix != None:
+            xyz = self.t_matrix.t
+
         result = {
             "jointvalues":self.jointvalue,
-            "xyz":self.t_matrix.t,
+            "xyz": xyz ,
             "servovalues": self.servovalue,
             "trackvalues": self.trackvalue,
             "board":self.checkAllBoard()

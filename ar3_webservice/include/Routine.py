@@ -1,12 +1,18 @@
+import os
+import json
 class Routine:
     allowtypes = ['math','appendstring','call','callroutine','moveservo','movetrack','movejoint','movelinear','io','if']
     routinename=""
+    routineextenstion = ".json"
+    routinepath = ""
     content=""
     variables={}
     subroutines={}
     kern = None
+    errormsg = ""
 
     def __init__(self,kern):
+        self.routinepath = os.getcwd() + '/routines'
         self.iswork = False
         self.kern = kern
 
@@ -19,15 +25,19 @@ class Routine:
                     return "ERR_ROUTINE_NOTEXISTS"
 
                 self.content = f.read()
-                if is_json(self.content):
-                    a=json.load(content)
+                checkfeedback = self.is_json(self.content)
+
+                if checkfeedback == "":
+                    a=json.loads(self.content)
                     self.routines=a['routines']
                     self.variables=a['variables']
                     self.iswork = True
+                    return a
                 else:
                     self.iswork = False
                     self.routines = {}
                     self.variables = {}
+                    self.errormsg = checkfeedback
                     return "ERR_ROUTINE_ISNOTJSON"
             except IOError:
                 self.iswork = False
@@ -36,7 +46,7 @@ class Routine:
                 return "ERR_ROUTINE_NOTEXISTS"
             finally:
                 f.close()
-            return ""
+            return "OK"
 
     def execute(self):
         result = self.executeSubRoutine('main')
@@ -201,3 +211,11 @@ class Routine:
             return True
         else:
             return False
+
+    def is_json(self,jsoncontent):
+        try:
+            obj = json.loads(jsoncontent)
+        except ValueError as e:
+            return e
+
+        return ""

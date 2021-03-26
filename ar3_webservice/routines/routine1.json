@@ -8,7 +8,7 @@
     "$para2$": 2,
     "@runcount@": 0,
     "@runcounttxt@": "",
-    "@parastring@": "",
+    "@parastring@": ""
   },
   "routines": {
       "main": [
@@ -18,7 +18,7 @@
          { "type":"movejoint", "movetype":"absolute", "values": {"j1": 0,  "j2": 0, "j3": 0, "j4": "@j4home@", "j5": 0, "j6": 0 } },
          { "type":"movejoint", "movetype":"move","values": {"j1": -10,  "j2": 0, "j3": 0, "j4": 0, "j5": 0, "j6": 0 } },
          { "type":"movejoint", "movetype":"move","values": {"j1": 10,  "j2": 0, "j3": 0, "j4": 0, "j5": 0, "j6": 0 } },
-         { "type":"call","subroutines":["opengripper1","settrackhome"]},
+         { "type":"call","subroutines":["opengripper1","settrackhome"]}
       ],
       "opengripper1": [
           {"type":"moveservo", "movetype":"absolute","values":{ "servo1": 0 } },
@@ -30,11 +30,10 @@
           {"type":"movetrack", "movetype":"move","values":{ "t1": 10 } },
           {"type":"movetrack", "movetype":"move","values":{ "t1": -10 } }
       ],
-
       "othersubroutine": [
           {"type":"movelinear", "values":{"x": 30,"y": 20,"z": 20 }},
           {"type":"io","pin": 30,"type": "read/write","pintype": "analog/digital","storein": "@para2@"},
-          {"type": "if",  "@para2@=1": ["main"], "@para2@ != 1": ["settrackhome"],},
+          {"type": "if",  "@para2@=1": ["main"], "@para2@ != 1": ["settrackhome"]},
           {"type": "callroutine", "routines": { "routine1":{"@para1@": "my sample string from parent", "@j4home@": 20}}}
       ]
   }

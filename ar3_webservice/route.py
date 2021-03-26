@@ -22,15 +22,29 @@ app = Flask(__name__,template_folder = "views")
 
 @app.route('/')
 def index():
-    return json.dumps(kern.run_index())
+    return json.dumps(kern.api_index())
 
 
-@app.route('/<methodname>')
-@app.route('/<methodname>/<resource>')
-@app.route('/<methodname>/<resource>/<subresource>')
+@app.route('/<methodname>',methods=['GET','POST'])
+@app.route('/<methodname>/<resource>',methods=['GET','POST'])
+@app.route('/<methodname>/<resource>/<subresource>',methods=['GET','POST'])
 def getResource(methodname,resource=None,subresource=None):
-    actionname = 'api_' + methodname
-    if hasattr(kern, actionname) and callable(getattr(kern, actionname)):
+    flexibleactionname = 'api_' + methodname
+
+    if request.method == 'GET':
+        primaryactionname = 'get_' + methodname
+    else:
+        primaryactionname = 'post_' + methodname
+
+
+    if hasattr(kern, primaryactionname):
+        actionname=primaryactionname
+    elif hasattr(kern, flexibleactionname):
+        actionname = flexibleactionname
+    else:
+        return json.dumps({'status': 'Failed', 'msg': f"method  {primaryactionname} or {flexibleactionname} does not exists"})
+
+    if callable(getattr(kern, actionname)):
         func = getattr(kern, actionname)
         kern.methodname = methodname
 
@@ -45,7 +59,26 @@ def getResource(methodname,resource=None,subresource=None):
         result = func()
         return json.dumps(result)
     else:
-        return json.dumps({'status':'Failed','msg': 'method ' + actionname +' is not exists'})
+        return json.dumps({'status':'Failed','msg': f"method  {actionname} is not callable function"})
+
+@app.route('/routine',methods=['PUT'])
+def putRoutine(routinename):
+    result = kern.addRoutine(routinename)
+    return json.dumps(result)
+
+@app.route('/routine/<routinename>',methods=['PUT','DELETE'])
+def deleteRoutine(routinename):
+    if request.method == 'DELETE':
+        result = kern.deleteRoutine(routinename)
+    elif  request.method == 'PUT':
+        result = kern.overrideRoutine(routinename)
+    else:
+        result = json.dumps( { "status":"Failed" ,"msg":f"routine {routinename} does not exists"})
+    return json.dumps(result)
+
+
+
+
 
 ## some override setting at below, just ignore it don't change ##
 @app.before_request
