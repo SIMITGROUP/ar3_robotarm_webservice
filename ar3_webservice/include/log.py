@@ -32,6 +32,7 @@ errorcodes ={
     "ERR_SUBROUTINE_UNSUPPORTMOVETYPE":"Sub routine movetype is not supported",
     "ERR_ROUTINE_OPERATIONUNKNOWN": "No operation defined in api",
     "ERR_IO_INVALIDOPERATION": "only /io/on, /io/off, /io/read is supported",
+    "ERR_WAITIO_INVALIDVALUE": "Wait digital value only support on/off",
     "ERR_IO_INVALIDVALUE": "io input only support 1,0,on,off"
 }
 # log 1=error/danger, 2 = warning, 3 = simple info, 4 = debug

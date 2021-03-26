@@ -446,6 +446,17 @@ class Hardware:
         result = self.writeIO(self.ser_arduino, command)
         return result
 
+    def waitDigitalInput(self,pin,value):
+        if value==1:
+            command="WIN"+str(pin)
+        else:
+            command = "WON" + str(pin)
+        result = self.readIO(self.ser_arduino, command)
+        if result =='Done':
+            return "OK"
+        else:
+            return result
+
     def restoreAllServo(self):
         for k,v in self.servovalue.items():
             self.setServo(k,v)

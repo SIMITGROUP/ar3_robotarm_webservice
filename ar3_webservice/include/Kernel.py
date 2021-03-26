@@ -465,10 +465,22 @@ class Kernel:
 
         return self.hw.sendDigitalOutput(pin,digitalvalue)
 
-    ########################################################################
-    ##################  process Arduino Board IO  ##########################
-    ##################  return multiple type result ########################
-    ########################################################################
+    def waitDigitalInput(self, pin, value):
+        digitalvalue = None
+        if type(value) == str:
+            if value.lower() in ['on', '1']:
+                digitalvalue = 1
+            elif value.lower() in ['off', '0']:
+                digitalvalue = 0
+            else:
+                return 'ERR_WAITIO_INVALIDVALUE'
+        elif value:
+            digitalvalue = 1
+        else:
+            digitalvalue = 0
+
+        return self.hw.waitDigitalInput(pin, digitalvalue)
+
     def getAllIO(self):
         result = {
             "input": self.hw.inputpins,
