@@ -166,7 +166,8 @@ class Kernel:
             result = self.runRoutine(routinename)
         else:
             result ="ERR_ROUTINE_OPERATIONUNKNOWN"
-        return log.getMsg(result)
+
+        return log.getMsg(result,"")
 
     ########################################################################
     ##################  process robot arm operations #######################
@@ -447,33 +448,6 @@ class Kernel:
         rt = Routine(self)
         result = rt.load(routinename)
         return result
-
-        # else:
-        #     return result
-        # filename = self.routinepath + "/" + routinename + self.routineextenstion
-        # if os.path.isfile(filename):
-        #     try:
-        #         f = open(filename)
-        #         if f == False:
-        #             return "ERR_ROUTINE_NOTEXISTS"
-        #
-        #         content = f.read()
-        #         if getcleartext == True:
-        #             return content
-        #         else:
-        #             if is_json(content):
-        #                 return json.load(content)
-        #             else:
-        #                 return "ERR_ROUTINE_ISNOTJSON"
-        #     except IOError:
-        #         print("File not accessible")
-        #         return ""
-        #     finally:
-        #         f.close()
-        #
-        #     return ""
-        # else:
-        #     return ""
 
     #upload new routine.json
     def addRoutine(self):

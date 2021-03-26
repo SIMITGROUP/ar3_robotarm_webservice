@@ -50,6 +50,7 @@ class Routine:
 
     def execute(self):
         result = self.executeSubRoutine('main')
+        return result
     def executeSubRoutine(self,subroutinename):
         #validate subroutine exists
         if not subroutinename in self.subroutines.keys():
