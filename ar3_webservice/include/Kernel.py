@@ -144,13 +144,41 @@ class Kernel:
         result = self.setSpeed(self.req.get('speed'))
         return log.getMsg(result, "")
 
+    def api_io(self):
+        l = self.getAllIO()
+        if self.resource == None:
+            return log.getMsg("OK", "Only support digital input/output at the moment", {'inputpin':l['input'],'outputpin':l['output']})
+        elif self.subresource == None:
+            operation = self.resource.lower()
+            if operation ==  'on' or operation ==  'off':
+                return log.getMsg("OK", "You can output digital signal to following pins", {'pins': l['output']})
+            elif operation == 'read':
+                return log.getMsg("OK", "You can read digital input from following pins", {'pins': l['input']})
+            else:
+                return log.getMsg("ERR_IO_INVALIDOPERATION","")
+        else:
+            operation = self.resource.lower()
+            pinno = int(self.subresource)
+            if operation == 'read':
+                result = self.readDigitalInput(pinno)
+                if self.isErrorCode(result):
+                    return log.getMsg(result, "")
+                else:
+                    return log.getMsg("OK", "",{"value":result})
+            #write digital io
+            elif operation == 'on' or operation == 'off':
+                result = self.sendDigitalOutput(pinno,operation)
+            else:
+                result = "ERR_IO_INVALIDOPERATION"
+            return log.getMsg(result, "")
+
 
     def api_routine(self):
         if self.resource == None:
             list = self.getAllRoutines()
             separator = ","
             availableroutine = separator.join(list)
-            return log.getMsg('OK',f"Available routines is {availableroutine}")
+            return log.getMsg('OK',f"Available routines is {availableroutine}",{'routines':list})
 
         routinename = self.resource
         othersinfo = self.subresource
@@ -418,19 +446,36 @@ class Kernel:
     ##################  process io operations  #############################
     ##################  return value (mixed) ###############################
     ########################################################################
-    def digitalRead(self):
-        return 1
+    def readDigitalInput(self,pin):
+        return self.hw.readDigitalInput(pin)
 
-    def digitalWrite(self):
-        return 1
+    def sendDigitalOutput(self,pin,value):
+        digitalvalue = None
+        if type(value) == str:
+            if value.lower() in ['on','1'] :
+                digitalvalue= 1
+            elif  value.lower() in ['off','0']:
+                digitalvalue = 0
+            else:
+                return 'ERR_IO_INVALIDVALUE'
+        elif value:
+            digitalvalue = 1
+        else:
+            digitalvalue = 0
 
-    def analogRead(self):
-        return 1
+        return self.hw.sendDigitalOutput(pin,digitalvalue)
 
-    def analogWrite(self):
-        return 1
+    ########################################################################
+    ##################  process Arduino Board IO  ##########################
+    ##################  return multiple type result ########################
+    ########################################################################
+    def getAllIO(self):
+        result = {
+            "input": self.hw.inputpins,
+            "output": self.hw.outputpins,
+        }
 
-
+        return result
 
     ########################################################################
     ##################  process robot arm routines  ########################

@@ -27,6 +27,8 @@ class Hardware:
     tracksetting = None
     jointqty = 0
     jlabels = {0: "A", 1: "B", 2: "C", 3: "D", 4: "E", 5: "F"}
+    inputpins = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27],
+    outputpins = [28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53],
     calibrationspeed = 20
     jointvalue = {}
     trackvalue = {}
@@ -426,6 +428,23 @@ class Hardware:
         self.moveFromLimitToRestPosition(joints)
         return result
 
+    def readDigitalInput(self,pin):
+        command="JFX"+str(pin)+"T0"
+        result = self.readIO(self.ser_arduino, command)
+        if self.left(result,1)=='T':
+            return 1
+        elif self.left(result,1)=='F':
+            return 0
+        else:
+            return result
+
+    def sendDigitalOutput(self,pin,value):
+        if value:
+            command="ONX"+str(pin)
+        else:
+            command = "OFX"+str(pin)
+        result = self.writeIO(self.ser_arduino, command)
+        return result
 
     def restoreAllServo(self):
         for k,v in self.servovalue.items():
@@ -435,8 +454,6 @@ class Hardware:
     def setServo(self,servoname, degree):
         if (self.checkKey(self.servosetting, servoname) == False):
             return log.getMsg('ERR_SERVO_INVALIDSERVO', servoname + ' does not exists')
-
-
 
 
         #identify which servo no, cause AR3 put firmware into arduino, recognise as 0,1,2,3

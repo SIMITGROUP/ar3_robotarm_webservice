@@ -32,7 +32,7 @@
       ],
       "othersubroutine": [
           {"type":"movelinear", "values":{"x": 30,"y": 20,"z": 20 }},
-          {"type":"io","pin": 30,"type": "read/write","pintype": "analog/digital","storein": "@para2@"},
+          {"type":"io","pin": 30,"type": "read","storein": "@para2@"},
           {"type": "if",  "@para2@=1": ["main"], "@para2@ != 1": ["settrackhome"]},
           {"type": "callroutine", "routines": { "routine1":{"@para1@": "my sample string from parent", "@j4home@": 20}}}
       ]

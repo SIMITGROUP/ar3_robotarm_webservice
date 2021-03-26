@@ -30,7 +30,9 @@ errorcodes ={
     "ERR_UNDEFINED_SUBROUTINEWRONGTYPE":"There is 1 or more task in sub routine use unsupported type",
     "ERR_SUBROUTINE_CALL_SUBROUTINEUNDEFINED":"There is 1 or more call task undefined subroutine",
     "ERR_SUBROUTINE_UNSUPPORTMOVETYPE":"Sub routine movetype is not supported",
-    "ERR_ROUTINE_OPERATIONUNKNOWN": "No operation defined in api"
+    "ERR_ROUTINE_OPERATIONUNKNOWN": "No operation defined in api",
+    "ERR_IO_INVALIDOPERATION": "only /io/on, /io/off, /io/read is supported",
+    "ERR_IO_INVALIDVALUE": "io input only support 1,0,on,off"
 }
 # log 1=error/danger, 2 = warning, 3 = simple info, 4 = debug
 ERROR = 1
@@ -39,7 +41,7 @@ INFO = 3
 DEBUG = 4
 showloglevel = DEBUG
 
-def getMsg(code,moremsg):
+def getMsg(code,moremsg,morepara={}):
     # e standby for suitable environment use
     print(code+":"+moremsg)
     try:
@@ -53,7 +55,11 @@ def getMsg(code,moremsg):
                 msg = errorcodes[code]+', '+moremsg
         else:
             msg = moremsg
-        return {"code": code, "msg":msg}
+        result =  {"code": code, "msg":msg}
+        for k,v in morepara.items():
+            result[k]=v
+
+        return result
     except Exception as e:
         print(e)
         return {"code": code, "msg": 'System cannot provide more detail description'}
