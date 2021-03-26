@@ -24,6 +24,12 @@ errorcodes ={
     "ERR_MOVE_INVALIDTYPE": "Invalid movement type parameter, you shall submit 'move' or 'absolute' into parameter 'movetype' ",
     "ERR_MOVETRACK_OVERLIMIT": "Track movement blocked due to movement over control limit",
     "ERR_MOVE_LINEAR":"Linear movement is not supported at the moment",
+    "ERR_ROUTINE_INVALIDJSON":"Routine content cannot parse to json",
+    "ERR_ROUTINE_UNDEFINESUBROUTINE":"Sub routine undefined",
+    "ERR_UNDEFINED_SUBROUTINEUNDEFINETYPE":"There is 1 or more task in sub routine undefine type",
+    "ERR_UNDEFINED_SUBROUTINEWRONGTYPE":"There is 1 or more task in sub routine use unsupported type",
+    "ERR_SUBROUTINE_CALL_SUBROUTINEUNDEFINED":"There is 1 or more call task undefined subroutine",
+    "ERR_SUBROUTINE_UNSUPPORTMOVETYPE":"Sub routine movetype is not supported"
 }
 # log 1=error/danger, 2 = warning, 3 = simple info, 4 = debug
 ERROR = 1

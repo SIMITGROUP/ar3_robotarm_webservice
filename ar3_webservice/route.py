@@ -1,5 +1,5 @@
 from flask import Flask,request,render_template
-from include.Routine import Routine
+from include.Kernel import Kernel
 import json
 
 # import functions as f
@@ -8,7 +8,7 @@ import json
 #     SCHEDULER_API_ENABLED = True
 
 
-rt = Routine()
+kern = Kernel()
 app = Flask(__name__,template_folder = "views")
 
 # app.config.from_object(Config())
@@ -22,26 +22,26 @@ app = Flask(__name__,template_folder = "views")
 
 @app.route('/')
 def index():
-    return json.dumps(rt.run_index())
+    return json.dumps(kern.run_index())
 
 
 @app.route('/<methodname>')
 @app.route('/<methodname>/<resource>')
 @app.route('/<methodname>/<resource>/<subresource>')
 def getResource(methodname,resource=None,subresource=None):
-    actionname = 'run_' + methodname
-    if hasattr(rt, actionname) and callable(getattr(rt, actionname)):
-        func = getattr(rt, actionname)
-        rt.methodname = methodname
+    actionname = 'api_' + methodname
+    if hasattr(kern, actionname) and callable(getattr(kern, actionname)):
+        func = getattr(kern, actionname)
+        kern.methodname = methodname
 
         if type(resource) == str:
             resource = resource.lower()
         if type(subresource) == str:
             subresource = subresource.lower()
 
-        rt.resource = resource
-        rt.subresource = subresource
-        rt.req = request.values
+        kern.resource = resource
+        kern.subresource = subresource
+        kern.req = request.values
         result = func()
         return json.dumps(result)
     else:

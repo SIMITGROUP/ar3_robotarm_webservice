@@ -11,41 +11,31 @@
     "@parastring@": "",
   },
   "routines": {
-      "main": {
-        "math": {
-          "@runcount@": " @runcount@ + 1",
-        },
-        "string": {
-          "@parastring@" : ["para1 = ","@para1@",", para2 = ","$para2$"],
-          "@runcounttxt@": ["AR3 back to home ","@runcount@"," times"]
-        },
-        "movejoint": { "j1": 10,  "j2": 0, "j3": 0, "j4": "@j4home@", "j5": 0, "j6": 0 },
-        "movejoint": { "j1": -10,  "j2": 0, "j3": 0, "j4": "@j4home@", "j5": 0, "j6": 0 },
-        "movejoint": { "j1": 0,  "j2": 0, "j3": 0, "j4": "@j4home@", "j5": 0, "j6": 0 },
-        "callin": ["opengripper1","settrackhome"],
-      },
-      "opengripper1": {
-          "moveservo": { "servo1": 0 },
-          "moveservo": { "servo1": 110 },
-          "moveservo": { "servo1": 90 }
-      },
-      "settrackhome": {
-          "movetrack": { "track1": "@trackhomeposition@" }
-      },
+      "main": [
+         { "type": "math",  "varname":"@runcount@","formula": " @runcount@ + 1" },
+         { "type": "appendstring", "varname": "@parastring@","formula" : ["para1 = ","@para1@",", para2 = ","$para2$"] },
+         { "type": "appendstring", "@runcounttxt@": ["AR3 back to home ","@runcount@"," times"] },
+         { "type":"movejoint", "movetype":"absolute", "values": {"j1": 0,  "j2": 0, "j3": 0, "j4": "@j4home@", "j5": 0, "j6": 0 } },
+         { "type":"movejoint", "movetype":"move","values": {"j1": -10,  "j2": 0, "j3": 0, "j4": 0, "j5": 0, "j6": 0 } },
+         { "type":"movejoint", "movetype":"move","values": {"j1": 10,  "j2": 0, "j3": 0, "j4": 0, "j5": 0, "j6": 0 } },
+         { "type":"call","subroutines":["opengripper1","settrackhome"]},
+      ],
+      "opengripper1": [
+          {"type":"moveservo", "movetype":"absolute","values":{ "servo1": 0 } },
+          {"type":"moveservo", "movetype":"move","values":{ "servo1": 10 } },
+          {"type":"moveservo", "movetype":"move","values":{ "servo1": -10 } }
+      ],
+      "settrackhome": [
+          {"type":"movetrack", "movetype":"absolute","values":{ "t1": 0 } },
+          {"type":"movetrack", "movetype":"move","values":{ "t1": 10 } },
+          {"type":"movetrack", "movetype":"move","values":{ "t1": -10 } }
+      ],
 
-      "othersubroutine": {
-        "movelinear": { "x": 30,"y": 20,"z": 20 },
-        "io":{"pin": 30,"type": "read/write","pintype": "analog/digital","storein": "@para2@"},
-        "case": {
-          "@para2@=1": ["main"],
-          "@para2@ != 1": ["settrackhome"],
-        },
-        "callout": {
-            "routine1":  {
-              "@para1@": "my sample string from parent",
-              "@j4home@": 20
-            }
-          }
-      }
+      "othersubroutine": [
+          {"type":"movelinear", "values":{"x": 30,"y": 20,"z": 20 }},
+          {"type":"io","pin": 30,"type": "read/write","pintype": "analog/digital","storein": "@para2@"},
+          {"type": "if",  "@para2@=1": ["main"], "@para2@ != 1": ["settrackhome"],},
+          {"type": "callroutine", "routines": { "routine1":{"@para1@": "my sample string from parent", "@j4home@": 20}}}
+      ]
   }
 }
