@@ -69,7 +69,7 @@ class Kernel:
             result = self.calibrateAll()
         elif len(x)==2 and self.left(x,1) == 'j':
             result = self.calibrateJoints(x)
-        elif x == None:
+        elif x is None:
             return log.getMsg('OK', 'You can calibrate all joint with /calibrate/all, calibrate single joint (j1-j6) like /calibrate/j1, set new rest position /calibrate/setrest')
         else:
             return log.getMsg('ERR_CALIBRATION_UNKNOWN', x + " is not valid calibration command")
@@ -80,7 +80,7 @@ class Kernel:
         return log.getMsg(result, "")
 
     def api_calibratetrack(self):
-        if self.resource == None:
+        if self.resource is None:
             tracks = self.hw.getAllTracks()
             separator = ','
             txttracks = separator.join(tracks)
@@ -90,7 +90,7 @@ class Kernel:
         return log.getMsg(result, "")
 
     def api_movetrack(self):
-        if self.resource == None:
+        if self.resource is None:
             tracks = self.hw.getAllTracks()
             separator = ','
             txttracks = separator.join(tracks)
@@ -102,7 +102,7 @@ class Kernel:
         return log.getMsg(result, "")
 
     def api_servo(self):
-        if self.resource == None:
+        if self.resource is None:
             servos = self.hw.getAllServos()
             separator = ','
             txtservos = separator.join(servos)
@@ -114,7 +114,7 @@ class Kernel:
         return log.getMsg(result, "")
 
     def api_move_j(self):
-        if self.resource == None:
+        if self.resource is None:
             return log.getMsg("OK", "You can move joint j1-j6, like /move_j/j1?movetype=absolute/move&degree=10")
         else:
             degree = self.req.get("degree")
@@ -141,14 +141,14 @@ class Kernel:
         return log.getMsg(result, "")
 
     def api_setspeed(self):
-        result = self.setSpeed(self.req.get('speed'))
+        result = self.setSpeed(self.req.get('percent'))
         return log.getMsg(result, "")
 
     def api_io(self):
         l = self.getAllIO()
-        if self.resource == None:
+        if self.resource is None:
             return log.getMsg("OK", "Only support digital input/output at the moment", {'inputpin':l['input'],'outputpin':l['output']})
-        elif self.subresource == None:
+        elif self.subresource is None:
             operation = self.resource.lower()
             if operation ==  'on' or operation ==  'off':
                 return log.getMsg("OK", "You can output digital signal to following pins", {'pins': l['output']})
@@ -174,7 +174,7 @@ class Kernel:
 
 
     def api_routine(self):
-        if self.resource == None:
+        if self.resource is None:
             list = self.getAllRoutines()
             separator = ","
             availableroutine = separator.join(list)
@@ -183,7 +183,7 @@ class Kernel:
         routinename = self.resource
         othersinfo = self.subresource
         # direct give routine json content
-        if othersinfo == None:
+        if othersinfo is None:
             result = self.getRoutineInfo(routinename)
 
             if not self.isErrorCode(result):
@@ -219,7 +219,7 @@ class Kernel:
         joints = [1, 1, 1, 1, 1, 1]
         result = self.hw.goAllJointLimit(joints)
         if result == "OK":
-            result2 = self.moveRestPosition(joints)
+            result2 = self.moveToRestPosition(joints)
             return result2
         else:
             return result
@@ -250,7 +250,7 @@ class Kernel:
             if movetype != 'MOVE' and movetype != 'ABSOLUTE':
                 return 'ERR_MOVE_INVALIDTYPE'
 
-        if degree == None:
+        if degree is None:
             return "ERR_JOINT_NODEGREEDEFINED"
         elif type(degree) is str:
             degree = float(degree)
@@ -294,7 +294,8 @@ class Kernel:
         # log.info("done rotateJoint")
 
     def moveLinear(self,x, y, z):
-        if x == None or y == None or z == None:
+
+        if x is None or y is None or z is None:
             return "ERR_MOVEL_UNDEFINEDPARA"
         if type(x) == str:
             x = float(x)
@@ -324,7 +325,7 @@ class Kernel:
         bufferlength = 10
         lengthlimit = paras.tracksetting[trackname]['length'] - bufferlength
 
-        if mm == None:
+        if mm is None:
             return "ERR_MOVE_INVALIDMM"
         if type(mm) is str:
 
@@ -356,7 +357,7 @@ class Kernel:
         if (self.checkKey(paras.servosetting, servoname) == False):
             return 'ERR_SERVO_INVALIDSERVO'
 
-        if value == None :
+        if value is None :
             return "ERR_SERVO_INVALIDVALUE"
 
         # if given value is position name, get position degree from servosetting, or direct use integer value
@@ -387,12 +388,12 @@ class Kernel:
             #                       mindeg) + "/" + str(maxdeg) + ".")
 
     ################# modifying arm speed ################
-    def setSpeed(self, speed):
-        if speed == None:
+    def setSpeed(self, percent):
+        if percent is None:
             return "ERR_SETSPEED_UNDEFINEDVALUE"
-        if type(speed) == str:
-            speed = float(speed)
-        return self.hw.setSpeed(speed)
+        if type(percent) == str:
+            percent = float(percent)
+        return self.hw.setSpeed(percent)
 
     ############### covert arm position as restful url ####
     def getPositionUrl(self):
@@ -414,6 +415,8 @@ class Kernel:
 
     ################# move all arm parts in 1 go #########
     def setPosition(self,allpara):
+        print("allpara:")
+        print(allpara)
         # sample url =  /setposition?J1=19.71&J2=-90.22&J3=1.89&J4=-0.07&J5=-0.23&J6=-0.47&gripper1=0&t1=0&
         # commandCalc = "MJA"+J1dir+J1steps+"B"+J2dir+J2steps+"C"+J3dir+J3steps+"D"+J4dir+J4steps+"E"+J5dir+J5steps+"F"+J6dir+J6steps+"T"+TRdir+TRstep+"S"+newSpeed+"G"+ACCdur+"H"+ACCspd+"I"+DECdur+"K"+DECspd+"U"+str(J1StepCur)+"V"+str(J2StepCur)+"W"+str(J3StepCur)+"X"+str(J4StepCur)+"Y"+str(J5StepCur)+"Z"+str(J6StepCur)+"\n"
 

@@ -10,7 +10,7 @@
     "@runcounttxt@": "",
     "@parastring@": ""
   },
-  "routines": {
+  "subroutines": {
       "main": [
          { "type": "math",  "varname":"@runcount@","formula": " @runcount@ + 1" },
          { "type": "appendstring", "varname": "@parastring@","formula" : ["para1 = ","@para1@",", para2 = ","$para2$"] },

@@ -29,19 +29,19 @@ class Routine:
 
                 if checkfeedback == "":
                     a=json.loads(self.content)
-                    self.routines=a['routines']
+                    self.subroutines=a['subroutines']
                     self.variables=a['variables']
                     self.iswork = True
                     return a
                 else:
                     self.iswork = False
-                    self.routines = {}
+                    self.subroutines = {}
                     self.variables = {}
                     self.errormsg = checkfeedback
                     return "ERR_ROUTINE_ISNOTJSON"
             except IOError:
                 self.iswork = False
-                self.routines = {}
+                self.subroutines = {}
                 self.variables = {}
                 return "ERR_ROUTINE_NOTEXISTS"
             finally:
@@ -51,17 +51,20 @@ class Routine:
     def execute(self):
         result = self.executeSubRoutine('main')
         return result
+
     def executeSubRoutine(self,subroutinename):
         #validate subroutine exists
+
         if not subroutinename in self.subroutines.keys():
             return "ERR_ROUTINE_UNDEFINESUBROUTINE"
-        srt = subroutines[subroutinename]
+
+        srt = self.subroutines[subroutinename]
         arrlen = len(srt)
         for i in range(arrlen):
             attributes = srt[i]
             typename = attributes['type']
 
-            if typename == None:
+            if typename is None:
                 return "ERR_UNDEFINED_SUBROUTINEUNDEFINETYPE"
             elif not typename in self.allowtypes:
                 return "ERR_UNDEFINED_SUBROUTINEWRONGTYPE"
@@ -78,37 +81,43 @@ class Routine:
         #only replace variable if it is string
         if type(val) == str:
             for k,v in self.variables.items():
+                if type(v) != str:
+                    v = str(v)
                 val = val.replace(k,v)
-
         return val
 
     #apply mathematics formula into variables, it execute using eval and need careful with syntax no harmful
     def run_math(self,attr):
         # attr = { "type": "math",  "varname":"@runcount@","formula": " @runcount@ + 1" },
-        varname = attr['varname']
-        formula = attr['formula']
-        if varname == None:
-            return "ERR_SUBROUTINE_MATH_VARNAMEUNDEFINED"
-        elif formula == None:
-            return "ERR_SUBROUTINE_MATH_FORMULAUNDEFINED"
-
-        formula = self.applyVariable(formula)
-        #  = eval(formula)
-        codeobj = compile(formula,'myformula','eval')
-
-        if not codeobj:
-            return "ERR_SUBROUTINE_FORMULASYNTAXERROR"
-        else:
-            self.variables[varname] = eval(formula)
-            return "OK"
+        try:
+            varname = attr['varname']
+            formula = attr['formula']
+            print("varname",varname)
+            if varname is None:
+                return "ERR_SUBROUTINE_MATH_VARNAMEUNDEFINED"
+            elif formula is None:
+                return "ERR_SUBROUTINE_MATH_FORMULAUNDEFINED"
+            formula =  self.applyVariable(formula)
+            # codeobj = compile(formula,'myformula','exec')
+            codeobj = True
+            if not codeobj:
+                return "ERR_SUBROUTINE_FORMULASYNTAXERROR"
+            else:
+                self.variables[varname] = eval(formula)
+                return "OK"
+        except ValueError as e:
+            return "ERR_SUBROUTINE_MATH_FORMULAERROR"
 
     #combine string
     def run_appendstring(self,attr):
+
+        if not 'varname' in attr.keys()  or not 'formula' in attr.keys():
+            return "OK"
         varname = attr['varname']
         formula = attr['formula']
-        if varname == None:
+        if varname is None:
             return "ERR_SUBROUTINE_MATH_VARNAMEUNDEFINED"
-        elif formula == None:
+        elif formula is None:
             return "ERR_SUBROUTINE_MATH_FORMULAUNDEFINED"
         separator = ''
         self.variables[varname] = separator.join(formula)
@@ -119,7 +128,7 @@ class Routine:
         # {"type": "call", "subroutines": ["opengripper1", "settrackhome"]},
         subroutines = attr['subroutines']
 
-        if subroutines == None:
+        if subroutines is None:
             return "ERR_SUBROUTINE_CALL_SUBROUTINEUNDEFINED"
         else:
             arrlen = len(subroutines)
@@ -135,7 +144,7 @@ class Routine:
     #execute external routine
     def run_callroutine(self,attr):
         # {"type": "callroutine", "routines": { "routine1":{ "@para1@": "my sample string from parent", "@j4home@": 20}}}
-        for routinename, paras in  attr['routines'].items():
+        for routinename, paras in  attr['subroutines'].items():
             rt = Routine(self.kern)
             success = rt.load(routinename)
             if not success:
@@ -167,12 +176,12 @@ class Routine:
         return self.applyMovement(attr)
 
     def applyMovement(self,attr):
-        if attr['type'] == None:
+        if attr['type'] is None:
             return "ERR_UNDEFINED_SUBROUTINEUNDEFINETYPE"
         type = attr['type']
         movetype = attr['movetype']
 
-        if movetype != None:
+        if not movetype is None:
             if not movetype in ['absolute','move'] :
                 return "ERR_SUBROUTINE_UNSUPPORTMOVETYPE"
 
@@ -182,10 +191,13 @@ class Routine:
         elif type == 'movejoint':
             # move all joint in 1 go
             if movetype == 'absolute':
+                for k, v in attr['values'].items():
+                    attr['values'][k] = self.applyVariable(v)
                 result = self.kern.setPosition(attr['values'])
             # at this moment it can move joint by joint only
             elif movetype == 'move':
                 for k,v in attr['values'].items():
+                    v = self.applyVariable(v)
                     result = self.kern.moveJoint(k, v, movetype)
                     #error, direct exit
                     if self.isErrorCode(result):
@@ -193,14 +205,16 @@ class Routine:
         # move travel tracks, 1 at a time
         elif type == 'movetrack':
             for k, v in attr['values'].items():
-                result = self.kern.moveTrack(trackname, mm, movetype)
+                v = self.applyVariable(v)
+                result = self.kern.moveTrack(k, v, movetype)
                 if self.isErrorCode(result):
                     return result
 
         # move servos, 1 at a time
         elif type == 'moveservo':
             for k, v in attr['values'].items():
-                result = self.kern.moveServo(servoname, value)
+                v = self.applyVariable(v)
+                result = self.kern.moveServo(k, v)
                 if self.isErrorCode(result):
                     return result
         return "OK"
@@ -220,3 +234,9 @@ class Routine:
             return e
 
         return ""
+
+    def left(self,s, amount):
+        return s[:amount]
+
+    def right(self,s, amount):
+        return s[-amount:]

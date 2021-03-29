@@ -7,7 +7,7 @@ errorcodes ={
     "ERR_TRACK_INVALID": "Track name not exists in track database",
     "ERR_MOVE_INVALIDMM":"parameter mm is undefined",
     "ERR_MOVEL_UNDEFINEDPARA":"undefined 1 or more parameter of x,y,z",
-    "ERR_SETSPEED_UNDEFINEDVALUE":"speed undefined",
+    "ERR_SETSPEED_UNDEFINEDVALUE":"speed undefined, example: /setspeed?percent=10 (value between 10-100)",
     "ERR_KINEMATIC_UNDEFINEMATRIX": "undefine kinematic value (t_matrix), put initHardwareConnection = True in Hardware.py and restart web service",
     "ERR_CONNECT_FAILED01":"Robot arm serial connection failed",
     "ERR_SETPOSITION_NOPARA":"no parameter assigned (j1-j6, servos, tracks), workable example: /setposition?j1=10&j2=10&j3=10&j4=10&j5=10&j6=10&t1=20&gripper1=20",
@@ -33,14 +33,16 @@ errorcodes ={
     "ERR_ROUTINE_OPERATIONUNKNOWN": "No operation defined in api",
     "ERR_IO_INVALIDOPERATION": "only /io/on, /io/off, /io/read is supported",
     "ERR_WAITIO_INVALIDVALUE": "Wait digital value only support on/off",
-    "ERR_IO_INVALIDVALUE": "io input only support 1,0,on,off"
+    "ERR_IO_INVALIDVALUE": "io input only support 1,0,on,off",
+    "ERR_SUBROUTINE_MATH_FORMULAERROR": "subroutine math evaluation error"
+
 }
 # log 1=error/danger, 2 = warning, 3 = simple info, 4 = debug
 ERROR = 1
 WARNING = 2
 INFO = 3
 DEBUG = 4
-showloglevel = DEBUG
+showloglevel = 1
 
 def getMsg(code,moremsg,morepara={}):
     # e standby for suitable environment use

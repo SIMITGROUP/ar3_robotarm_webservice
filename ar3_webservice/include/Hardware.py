@@ -15,7 +15,7 @@ import kinematics as kn
 import numpy as np
 #define a class to connect the things
 class Hardware:
-    initHardwareConnection = False
+    initHardwareConnection = True
     ser_teensy = None
     ser_arduino = None
     teensyport = ""  # windows = COM3,4... Linux = /dev/ttyACM0,1,2,.. MAC = /dev/tty.usbmodem0000000
@@ -219,10 +219,8 @@ class Hardware:
 
     # linear movement
     def moveLinear(self,x,y,z):
-
-        if self.t_matrix== None:
+        if self.t_matrix is None:
             return "ERR_KINEMATIC_UNDEFINEMATRIX"
-
         self.t_matrix.t[0] += x
         self.t_matrix.t[1] += y
         self.t_matrix.t[2] += z
@@ -237,11 +235,8 @@ class Hardware:
                 return "ERR_ROTATEJOINT_OVERMAXLIMIT"
             elif npdegrees[i] < mindeg:
                 return "ERR_ROTATEJOINT_OVERMINLIMIT"
-        degrees[i]=npdegrees[i]
+            degrees[i]=npdegrees[i]
         #if no over limit, then move arm
-        # print(degrees)
-
-        # return "OK"
         return self.changePosition(degrees, {},{})
 
 
@@ -319,6 +314,8 @@ class Hardware:
         return result
 
     def changePosition(self,jointdata,trackdata,servodata):
+        print("jointdata")
+        print(jointdata)
         result="OK"
         command = "MJ"
         jsteps={}
@@ -332,8 +329,6 @@ class Hardware:
         newjointsteps={}
         newtrackdata = {}
         for k, v in jointdata.items():
-            print(k,v)
-
             degperstep = self.jsetting[k]['degperstep']
             newjointsteps[k] = { 'deg': v, 'step': self.convertDegToStep(v, degperstep)}
             deg = v - self.jointvalue[k]['degree']
@@ -388,6 +383,10 @@ class Hardware:
         return result
 
     def setSpeed(self,Speed):
+        if Speed>100:
+            Speed=100
+        if Speed <10:
+            Speed = 10
         self.Speed = Speed
         return "OK"
 
@@ -562,15 +561,16 @@ class Hardware:
         log.info("enter checkMachineStatus")
         self.refreshStepperMotorEncoderValue() #arrays
         xyz = [ 0,0,0 ]
-        if self.t_matrix != None:
-            xyz = self.t_matrix.t
+        if not self.t_matrix is None:
+            xyz = self.t_matrix.t.tolist()
 
         result = {
             "jointvalues":self.jointvalue,
-            "xyz": xyz ,
+            "xyz": xyz,
             "servovalues": self.servovalue,
             "trackvalues": self.trackvalue,
-            "board":self.checkAllBoard()
+            "board":self.checkAllBoard(),
+            "speed":self.Speed
         }
         log.info("done checkMachineStatus")
         return result
